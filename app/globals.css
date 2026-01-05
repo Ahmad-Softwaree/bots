@@ -126,6 +126,64 @@
   }
 
   body {
-    @apply bg-background text-foreground px-10;
+    @apply bg-background text-foreground;
+  }
+
+  header,
+  footer,
+  main {
+    @apply px-10;
+  }
+
+  /* Custom Scrollbar Styles */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(0.55 0.22 310) oklch(0.18 0.02 264);
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: oklch(0.18 0.02 264);
+    border-radius: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: oklch(0.55 0.22 310);
+    border-radius: 8px;
+    border: 2px solid oklch(0.18 0.02 264);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.65 0.25 264);
+  }
+
+  *::-webkit-scrollbar-thumb:active {
+    background: oklch(0.75 0.28 264);
+  }
+
+  /* Light mode scrollbar */
+  :root:not(.dark) * {
+    scrollbar-color: oklch(0.708 0 0) oklch(0.97 0 0);
+  }
+
+  :root:not(.dark) *::-webkit-scrollbar-track {
+    background: oklch(0.97 0 0);
+  }
+
+  :root:not(.dark) *::-webkit-scrollbar-thumb {
+    background: oklch(0.708 0 0);
+    border: 2px solid oklch(0.97 0 0);
+  }
+
+  :root:not(.dark) *::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.556 0 0);
+  }
+
+  :root:not(.dark) *::-webkit-scrollbar-thumb:active {
+    background: oklch(0.205 0 0);
   }
 }

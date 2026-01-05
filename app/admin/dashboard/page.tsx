@@ -16,7 +16,6 @@ import {
 import { Plus, Search, Loader2 } from "lucide-react";
 import type { Bot } from "@/lib/db/schema";
 import type { CreateBot } from "@/types/validation/bot";
-import { toast } from "sonner";
 
 export default function AdminDashboard() {
   const [search, setSearch] = useState("");
@@ -47,25 +46,15 @@ export default function AdminDashboard() {
   const handleSubmit = async (data: CreateBot) => {
     if (editingBot) {
       // Update existing bot
-      const result = await updateMutation.mutateAsync({
+      await updateMutation.mutateAsync({
         ...data,
         id: editingBot.id,
       });
-      if (result.success) {
-        toast.success("Bot updated successfully");
-        handleCloseForm();
-      } else {
-        toast.error(result.error || "Failed to update bot");
-      }
+      handleCloseForm();
     } else {
       // Create new bot
-      const result = await createMutation.mutateAsync(data);
-      if (result.success) {
-        toast.success("Bot created successfully");
-        handleCloseForm();
-      } else {
-        toast.error(result.error || "Failed to create bot");
-      }
+      await createMutation.mutateAsync(data);
+      handleCloseForm();
     }
   };
 

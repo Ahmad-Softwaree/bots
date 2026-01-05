@@ -18,7 +18,12 @@ import {
 } from "lucide-react";
 import { URLS } from "@/lib/constants/urls";
 import dayjs from "dayjs";
-import { SlideUp, Scale, FadeIn } from "@/components/shared/animate";
+import {
+  SlideUp,
+  Scale,
+  FadeIn,
+  MotionInteractive,
+} from "@/components/shared/animate";
 import { motion } from "framer-motion";
 
 export default function BotDetailPage() {
@@ -43,14 +48,14 @@ export default function BotDetailPage() {
             <p className="text-muted-foreground mb-8">
               The bot you are looking for does not exist or has been removed.
             </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <MotionInteractive>
               <Button asChild>
                 <Link href={URLS.BOTS} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
                   Back to All Bots
                 </Link>
               </Button>
-            </motion.div>
+            </MotionInteractive>
           </div>
         </FadeIn>
       </div>

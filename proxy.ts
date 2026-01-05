@@ -3,24 +3,24 @@ import { NextResponse } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
-export default clerkMiddleware(
-  async (auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
+  // Protect admin routes - require authentication and check admin user ID
+  if (isAdminRoute(req)) {
     const { userId } = await auth();
 
-    // Protect admin routes - only allow specific admin user ID
-    if (isAdminRoute(req)) {
-      if (!userId || userId !== process.env.ADMIN_USER_ID) {
-        const url = new URL("/", req.url);
-        return NextResponse.redirect(url);
-      }
+    // If not authenticated, protect the route (will trigger Clerk sign-in)
+    if (!userId) {
+      await auth.protect();
+      return;
     }
-  },
-  {
-    // Enable proxy mode for latest Clerk version
-    signInUrl: "/",
-    signUpUrl: "/",
+
+    // If authenticated but not admin, redirect to home
+    if (userId !== process.env.ADMIN_USER_ID) {
+      const url = new URL("/", req.url);
+      return NextResponse.redirect(url);
+    }
   }
-);
+});
 
 export const config = {
   matcher: [

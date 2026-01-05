@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/shared/image-upload";
 import type { Bot } from "@/lib/db/schema";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface BotFormProps {
   open: boolean;
@@ -89,6 +90,34 @@ export function BotForm({
 
   const handleSubmit = (data: CreateBot) => {
     onSubmit(data);
+  };
+
+  const handleImageDelete = async (
+    url: string,
+    fieldOnChange: (value: string) => void
+  ) => {
+    try {
+      // Extract the file key from the URL
+      const fileKey = url.split("/").pop();
+      if (!fileKey) return;
+
+      // Call API to delete from UploadThing
+      const response = await fetch("/api/uploadthing/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileKey }),
+      });
+
+      if (response.ok) {
+        fieldOnChange("");
+        toast.success("Image deleted successfully");
+      } else {
+        toast.error("Failed to delete image");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast.error("Failed to delete image");
+    }
   };
 
   return (
@@ -154,7 +183,7 @@ export function BotForm({
                     <ImageUpload
                       value={field.value}
                       onChange={field.onChange}
-                      onRemove={() => field.onChange("")}
+                      onRemove={(url) => handleImageDelete(url, field.onChange)}
                       disabled={isLoading}
                       label="Upload main bot image (4MB max)"
                     />
@@ -177,7 +206,7 @@ export function BotForm({
                     <ImageUpload
                       value={field.value}
                       onChange={field.onChange}
-                      onRemove={() => field.onChange("")}
+                      onRemove={(url) => handleImageDelete(url, field.onChange)}
                       disabled={isLoading}
                       label="Upload bot icon (4MB max)"
                     />

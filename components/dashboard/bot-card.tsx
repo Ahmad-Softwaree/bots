@@ -10,7 +10,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ConfirmationDialog } from "@/components/shared/confirmation-dialog";
 import { useDeleteBot, useToggleBotStatus } from "@/lib/queries/bot";
-import { toast } from "sonner";
 
 interface BotCardProps {
   bot: Bot;
@@ -23,27 +22,15 @@ export function BotCard({ bot, onEdit }: BotCardProps) {
   const toggleStatusMutation = useToggleBotStatus();
 
   const handleDelete = async () => {
-    const result = await deleteMutation.mutateAsync(bot.id);
-    if (result.success) {
-      toast.success("Bot deleted successfully");
-      setDeleteDialogOpen(false);
-    } else {
-      toast.error(result.error || "Failed to delete bot");
-    }
+    await deleteMutation.mutateAsync(bot.id);
+    setDeleteDialogOpen(false);
   };
 
   const handleToggleStatus = async (checked: boolean) => {
-    const newStatus = checked ? "active" : "down";
-    const result = await toggleStatusMutation.mutateAsync({
+    await toggleStatusMutation.mutateAsync({
       id: bot.id,
       currentStatus: bot.status,
     });
-
-    if (result.success) {
-      toast.success(`Bot status changed to ${newStatus}`);
-    } else {
-      toast.error(result.error || "Failed to update status");
-    }
   };
 
   return (

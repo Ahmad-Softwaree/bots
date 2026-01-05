@@ -6,6 +6,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { QueryKeys } from "@/lib/constants/query-keys";
 import {
   getBotsLimited,
@@ -77,10 +78,18 @@ export function useCreateBot() {
   return useMutation({
     mutationKey: [QueryKeys.CREATE_BOT],
     mutationFn: (data: CreateBot) => createBot(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Bot created successfully");
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
+      } else {
+        toast.error(result.error || "Failed to create bot");
+      }
+    },
+    onError: () => {
+      toast.error("Failed to create bot");
     },
   });
 }
@@ -94,11 +103,19 @@ export function useUpdateBot() {
   return useMutation({
     mutationKey: [QueryKeys.UPDATE_BOT],
     mutationFn: (data: CreateBot & { id: string }) => updateBot(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOT_BY_ID] });
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Bot updated successfully");
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOT_BY_ID] });
+      } else {
+        toast.error(result.error || "Failed to update bot");
+      }
+    },
+    onError: () => {
+      toast.error("Failed to update bot");
     },
   });
 }
@@ -112,10 +129,18 @@ export function useDeleteBot() {
   return useMutation({
     mutationKey: [QueryKeys.DELETE_BOT],
     mutationFn: (id: string) => deleteBot(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Bot deleted successfully");
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
+      } else {
+        toast.error(result.error || "Failed to delete bot");
+      }
+    },
+    onError: () => {
+      toast.error("Failed to delete bot");
     },
   });
 }
@@ -135,11 +160,21 @@ export function useToggleBotStatus() {
       id: string;
       currentStatus: "active" | "down";
     }) => toggleBotStatus(id, currentStatus),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
-      queryClient.invalidateQueries({ queryKey: [QueryKeys.BOT_BY_ID] });
+    onSuccess: (result, variables) => {
+      if (result.success) {
+        const newStatus =
+          variables.currentStatus === "active" ? "down" : "active";
+        toast.success(`Bot status changed to ${newStatus}`);
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_ADMIN] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_LIMITED] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOTS_INFINITE] });
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.BOT_BY_ID] });
+      } else {
+        toast.error(result.error || "Failed to update status");
+      }
+    },
+    onError: () => {
+      toast.error("Failed to update status");
     },
   });
 }
