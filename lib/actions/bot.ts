@@ -28,14 +28,27 @@ export async function getBotsLimited(): Promise<Bot[]> {
  * Get active bots with pagination - for infinite scroll (PUBLIC - only active bots)
  */
 export async function getBotsInfinite(
-  page: number = 1
+  page: number = 1,
+  search?: string
 ): Promise<PaginatedResponse<Bot>> {
   const offset = (page - 1) * PER_PAGE;
+
+  const conditions = [eq(bots.status, "active")];
+
+  // Apply search filter if provided
+  if (search && search.trim()) {
+    conditions.push(
+      or(
+        ilike(bots.name, `%${search}%`),
+        ilike(bots.description, `%${search}%`)
+      )!
+    );
+  }
 
   const result = await db
     .select()
     .from(bots)
-    .where(eq(bots.status, "active"))
+    .where(and(...conditions)!)
     .orderBy(desc(bots.createdAt))
     .limit(PER_PAGE + 1)
     .offset(offset);

@@ -35,10 +35,11 @@ export function useBotsLimited() {
 /**
  * Hook to fetch bots with infinite pagination
  */
-export function useBotsInfinite() {
+export function useBotsInfinite(search?: string) {
   return useInfiniteQuery<PaginatedResponse<Bot>, Error>({
-    queryKey: [QueryKeys.BOTS_INFINITE],
-    queryFn: ({ pageParam = 1 }) => getBotsInfinite(pageParam as number),
+    queryKey: [QueryKeys.BOTS_INFINITE, search],
+    queryFn: ({ pageParam = 1 }) =>
+      getBotsInfinite(pageParam as number, search),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 1,
   });

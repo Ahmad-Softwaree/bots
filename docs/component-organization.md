@@ -465,6 +465,7 @@ When extracting a component:
 6. **Consistent naming** - Follow established patterns
 7. **Logical grouping** - Organize by feature/type, not arbitrarily
 8. **Avoid prop drilling** - If passing props through 3+ levels, reconsider structure
+9. **Toast notifications** - ALWAYS use toast inside react-query file functions (mutation callbacks) if available, NOT directly inside components
 
 ---
 
