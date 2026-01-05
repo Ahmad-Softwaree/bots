@@ -5,6 +5,7 @@ import { LoadingState } from "@/components/shared/loading-state";
 import { Pagination } from "@/components/shared/pagination";
 import { useBotsInfinite } from "@/lib/queries/bot";
 import type { Bot } from "@/lib/db/schema";
+import { SlideUp } from "@/components/shared/animate";
 
 export default function BotsPage() {
   const {
@@ -56,14 +57,16 @@ export default function BotsPage() {
 
   return (
     <div className="  py-20">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
-          All Telegram Bots
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Browse our complete collection of {allBots.length}+ Telegram bots.
-        </p>
-      </div>
+      <SlideUp>
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
+            All Telegram Bots
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Browse our complete collection of {allBots.length}+ Telegram bots.
+          </p>
+        </div>
+      </SlideUp>
 
       <Pagination<Bot>
         data={allBots}

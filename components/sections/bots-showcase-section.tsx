@@ -8,6 +8,8 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { URLS } from "@/lib/constants/urls";
 import type { Bot } from "@/lib/db/schema";
+import { SlideUp, StaggerContainer } from "@/components/shared/animate";
+import { motion } from "framer-motion";
 
 export function BotsShowcaseSection() {
   const { data: bots, isLoading, error } = useBotsLimited();
@@ -70,29 +72,35 @@ export function BotsShowcaseSection() {
 
   return (
     <section className="  py-20 md:py-24">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-          Featured Bots
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Explore our collection of Telegram bots built for daily automation.
-        </p>
-      </div>
+      <SlideUp>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
+            Featured Bots
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Explore our collection of Telegram bots built for daily automation.
+          </p>
+        </div>
+      </SlideUp>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <StaggerContainer className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {bots.map((bot: Bot) => (
           <BotCard key={bot.id} bot={bot} />
         ))}
-      </div>
+      </StaggerContainer>
 
-      <div className="mt-12 text-center">
-        <Button asChild size="lg" className="gap-2">
-          <Link href={URLS.BOTS}>
-            See All Bots
-            <ArrowRight className="h-5 w-5" />
-          </Link>
-        </Button>
-      </div>
+      <SlideUp transition={{ delay: 0.3 }}>
+        <div className="mt-12 text-center">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button asChild size="lg" className="gap-2">
+              <Link href={URLS.BOTS}>
+                See All Bots
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </motion.div>
+        </div>
+      </SlideUp>
     </section>
   );
 }

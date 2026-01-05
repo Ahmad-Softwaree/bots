@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { StaggerContainer } from "./animate";
 
 interface PaginationProps<T> {
   data: T[];
@@ -26,37 +28,48 @@ export function Pagination<T extends { id: string }>({
 }: PaginationProps<T>) {
   if (data.length === 0) {
     return (
-      <div className="text-center py-20">
+      <motion.div
+        className="text-center py-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}>
         <p className="text-muted-foreground">{emptyMessage}</p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
     <>
-      <div className={gridClassName}>
+      <StaggerContainer className={gridClassName}>
         {data.map((item: T) => (
           <div key={item.id}>{renderItem(item)}</div>
         ))}
-      </div>
+      </StaggerContainer>
 
       {hasNextPage && (
-        <div className="mt-12 text-center">
-          <Button
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-            size="lg"
-            className="gap-2">
-            {isFetchingNextPage ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              loadMoreText
-            )}
-          </Button>
-        </div>
+        <motion.div
+          className="mt-12 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={() => fetchNextPage()}
+              disabled={isFetchingNextPage}
+              size="lg"
+              className="gap-2">
+              {isFetchingNextPage ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                loadMoreText
+              )}
+            </Button>
+          </motion.div>
+        </motion.div>
       )}
     </>
   );

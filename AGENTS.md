@@ -4,6 +4,23 @@ This file contains **strict coding standards and architecture patterns** for thi
 
 ---
 
+## 🚨 CRITICAL: Project Configuration
+
+### 📦 Package Manager
+
+- **ALWAYS use `bun`** - This is the ONLY package manager for this project
+- **NEVER use `npm`, `yarn`, or `pnpm`**
+- All installation commands MUST use `bun add` or `bun install`
+
+### 🔐 Environment Variables
+
+- **ALWAYS use `.env`** - This is the ONLY environment file
+- **NEVER create `.env.local`, `.env.example`, `.env.development`, or any other .env variants**
+- All environment variables go in the single `.env` file
+- The `.env` file is gitignored and safe for local development
+
+---
+
 ## 🚨 CRITICAL: Library Enforcement
 
 **ONLY** use the libraries and tools specified in this document. **DO NOT** introduce any other libraries without explicit approval.
