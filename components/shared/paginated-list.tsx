@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
 import { motion } from "framer-motion";
-import { StaggerContainer } from "./animate";
-import { useState, useMemo } from "react";
-import { useDebounce } from "@/lib/hooks/use-debounce";
+import { StaggerContainer, MotionInteractive } from "./animate";
+import { useState, useEffect } from "react";
 
 interface PaginatedListProps<T> {
   // Data from infinite query
@@ -51,14 +50,15 @@ export function PaginatedList<T extends { id: string }>({
   gridClassName = "grid gap-6 md:grid-cols-2 lg:grid-cols-3",
 }: PaginatedListProps<T>) {
   const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebounce(searchInput, 300);
 
-  // Trigger search callback when debounced value changes
-  useMemo(() => {
-    if (enableSearch && onSearchChange) {
-      onSearchChange(debouncedSearch);
-    }
-  }, [debouncedSearch, onSearchChange, enableSearch]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (enableSearch && onSearchChange) {
+        onSearchChange(searchInput);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput, onSearchChange, enableSearch]);
 
   if (isLoading) {
     return (
@@ -176,9 +176,7 @@ export function PaginatedList<T extends { id: string }>({
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
+              <MotionInteractive>
                 <Button
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
@@ -193,7 +191,7 @@ export function PaginatedList<T extends { id: string }>({
                     loadMoreText
                   )}
                 </Button>
-              </motion.div>
+              </MotionInteractive>
             </motion.div>
           )}
         </>

@@ -13,6 +13,16 @@ A beautiful, modern landing page to showcase your Telegram bots with a powerful 
 
 ---
 
+## 📸 Screenshots
+
+### Home Page
+
+![Home Page](screenshots/home.png)
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
 ## ✨ Features
 
 ### 🌐 Public Website

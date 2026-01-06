@@ -2,10 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Github } from "lucide-react";
-import { Scale } from "@/components/shared/animate";
+import { Scale, MotionInteractive } from "@/components/shared/animate";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export function CtaSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="  py-20 md:py-24">
       <Scale>
@@ -17,40 +20,34 @@ export function CtaSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              Ready to Automate Your Workflow?
+              {t("cta.title")}
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Join thousands of users who are already boosting their
-              productivity with our Telegram bots. Get started in minutes,
-              completely free.
+              {t("cta.subtitle")}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
+              <MotionInteractive>
                 <Button asChild size="lg" className="gap-2">
                   <a
                     href="https://wa.me/9647701993085"
                     target="_blank"
                     rel="noopener noreferrer">
-                    Get Started Now
+                    {t("cta.get_started")}
                     <ArrowRight className="h-5 w-5" />
                   </a>
                 </Button>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
+              </MotionInteractive>
+              <MotionInteractive>
                 <Button asChild size="lg" variant="outline" className="gap-2">
                   <a
                     href="https://github.com/Ahmad-Softwaree"
                     target="_blank"
                     rel="noopener noreferrer">
                     <Github className="h-5 w-5" />
-                    Star on GitHub
+                    {t("cta.star_github")}
                   </a>
                 </Button>
-              </motion.div>
+              </MotionInteractive>
             </div>
           </motion.div>
 

@@ -6,8 +6,9 @@ import { Footer } from "@/components/layouts/footer";
 import { Providers } from "./providers";
 import { PageTransition } from "@/components/shared/page-transition";
 import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+import { shadcn } from "@clerk/themes";
 import { Toaster } from "sonner";
+import { ModalManager } from "@/components/shared/ModalManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export default function RootLayout({
   return (
     <ClerkProvider
       appearance={{
-        baseTheme: dark,
+        baseTheme: shadcn,
       }}>
       <html lang="en" className="dark" suppressHydrationWarning>
         <body
@@ -44,6 +45,7 @@ export default function RootLayout({
               <PageTransition>{children}</PageTransition>
             </main>
             <Footer />
+            <ModalManager />
             <Toaster position="top-center" richColors />
           </Providers>
         </body>

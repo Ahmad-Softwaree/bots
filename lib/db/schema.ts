@@ -2,9 +2,12 @@ import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const bots = pgTable("bots", {
   id: uuid("id").defaultRandom().primaryKey(),
-  userId: text("user_id").notNull(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
+  enName: text("en_name").notNull(),
+  arName: text("ar_name").notNull(),
+  ckbName: text("ckb_name").notNull(),
+  enDesc: text("en_desc").notNull(),
+  arDesc: text("ar_desc").notNull(),
+  ckbDesc: text("ckb_desc").notNull(),
   image: text("image").notNull(),
   iconImage: text("icon_image").notNull(),
   link: text("link").notNull(),
@@ -16,5 +19,8 @@ export const bots = pgTable("bots", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export type Bot = typeof bots.$inferSelect;
+export type Bot = typeof bots.$inferSelect & {
+  name?: string;
+  description?: string;
+};
 export type NewBot = typeof bots.$inferInsert;

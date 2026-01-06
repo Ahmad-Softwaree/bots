@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { Bot, Github } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { URLS } from "@/lib/constants/urls";
+import { URLS } from "@/lib/urls";
 import { SlideUp } from "@/components/shared/animate";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export function Footer() {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -26,15 +28,15 @@ export function Footer() {
                 <span className="text-xl font-bold">Telegram Bots</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-md">
-                Discover powerful Telegram bots designed to automate your daily
-                tasks and enhance your productivity. All bots are open-source
-                and free to use.
+                {t("footer_links.brand_description")}
               </p>
             </div>
 
             {/* Quick Links */}
             <div>
-              <h3 className="font-semibold mb-4">Quick Links</h3>
+              <h3 className="font-semibold mb-4">
+                {t("footer_links.quick_links")}
+              </h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <motion.div
@@ -43,7 +45,7 @@ export function Footer() {
                     <Link
                       href={URLS.HOME}
                       className="text-muted-foreground hover:text-primary transition-colors">
-                      Home
+                      {t("footer_links.home")}
                     </Link>
                   </motion.div>
                 </li>
@@ -54,7 +56,7 @@ export function Footer() {
                     <Link
                       href={URLS.BOTS}
                       className="text-muted-foreground hover:text-primary transition-colors">
-                      All Bots
+                      {t("footer_links.all_bots")}
                     </Link>
                   </motion.div>
                 </li>
@@ -63,7 +65,9 @@ export function Footer() {
 
             {/* Connect */}
             <div>
-              <h3 className="font-semibold mb-4">Connect</h3>
+              <h3 className="font-semibold mb-4">
+                {t("footer_links.connect")}
+              </h3>
               <ul className="space-y-2 text-sm">
                 <li>
                   <motion.div
@@ -75,7 +79,7 @@ export function Footer() {
                       rel="noopener noreferrer"
                       className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                       <Github className="h-4 w-4" />
-                      GitHub
+                      {t("footer_links.github")}
                     </a>
                   </motion.div>
                 </li>
@@ -101,8 +105,10 @@ export function Footer() {
 
         <SlideUp transition={{ delay: 0.2 }}>
           <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground md:flex-row md:justify-between">
-            <p>© {currentYear} Telegram Bots. All rights reserved.</p>
-            <p>Built with Next.js</p>
+            <p>
+              © {currentYear} Telegram Bots. {t("footer.rights")}
+            </p>
+            <p>{t("cta.powered_by")}</p>
           </div>
         </SlideUp>
       </div>

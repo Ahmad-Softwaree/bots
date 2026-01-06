@@ -46,6 +46,35 @@ This file contains **strict coding standards and architecture patterns** for thi
 - **Next.js** - React framework (App Router)
 - **React Server Components (RSC)** - Default component pattern
 - **TypeScript** - All code must be TypeScript
+- **Bun** - Package manager and runtime (ONLY package manager allowed)
+
+#### **Forms & Validation**
+
+- **react-hook-form** - Form state management (with shadcn/ui Form)
+- **Zod** - Schema validation
+- **@hookform/resolvers** - react-hook-form + Zod integration
+
+#### **URL & State Management**
+
+- **nuqs** - Type-safe URL parameter management (accessed via useAppQueryParams hook)
+
+#### **Authentication**
+
+- **Clerk** (@clerk/nextjs) - ONLY authentication provider allowed
+- **@clerk/themes** - Official Clerk theme integration (shadcn theme)
+
+#### **Theming**
+
+- **next-themes** - Dark/light mode management
+
+#### **Internationalization**
+
+- **i18next** - Translation framework
+- **react-i18next** - React bindings for i18next
+
+#### **File Uploads** (if needed)
+
+- **uploadthing** - File upload service (already integrated)
 
 ### ❌ FORBIDDEN LIBRARIES
 
@@ -54,10 +83,14 @@ This file contains **strict coding standards and architecture patterns** for thi
 - ❌ Other UI libraries: Material-UI, Chakra UI, Ant Design, Bootstrap, etc.
 - ❌ Other data fetching: SWR, RTK Query, Apollo Client, etc.
 - ❌ State management: Redux, Zustand, Jotai, Recoil, etc.
-- ❌ Form libraries: React Hook Form, Formik (unless explicitly added)
+- ❌ Other form libraries: Formik (use react-hook-form with shadcn/ui Form)
 - ❌ Custom HTTP clients: axios, fetch wrappers (use Server Actions instead)
 - ❌ CSS frameworks: Bootstrap, Bulma, Foundation, etc.
 - ❌ Icon libraries: Font Awesome, React Icons, Heroicons (use Lucide only)
+- ❌ Other auth providers: Auth.js (NextAuth), Supabase Auth, Firebase Auth (use Clerk only)
+- ❌ Other validation: Yup, Joi, class-validator (use Zod only)
+- ❌ Raw URL params: searchParams, useSearchParams, URLSearchParams (use nuqs via useAppQueryParams)
+- ❌ Package managers: npm, yarn, pnpm (use Bun only)
 
 ### 🔍 Enforcement
 
@@ -134,17 +167,18 @@ npx shadcn@latest add dialog
 
 ```
 lib/
-├── actions/       # Server actions (one file per table)
-│   ├── bot-actions.ts
-│   └── user-actions.ts
-├── queries/       # TanStack Query hooks (one file per table)
-│   ├── use-bot-queries.ts
-│   └── use-user-queries.ts
+├── react-query/
+│   ├── keys.ts            # Centralized query keys for all tables
+│   ├── actions/           # Server actions (one file per table)
+│   │   └── bot.action.ts
+│   └── queries/           # TanStack Query hooks (one file per table)
+│       └── bot.query.ts
 ├── constants/
-│   ├── urls.ts         # Centralized URLs
-│   └── query-keys.ts   # Centralized query keys (enum)
+│   ├── urls.ts            # Centralized URLs
+│   └── enum.ts            # Enums and constants
 └── db/
-    └── client.ts       # Database client
+    ├── client.ts          # Database client
+    └── schema.ts          # Database schema
 ```
 
 **Required Functions Per Table:**
@@ -185,10 +219,10 @@ Before writing ANY code:
 
 ### Data Fetching
 
-- [ ] Did I create action file in `lib/actions/`?
-- [ ] Did I create query hooks in `lib/queries/`?
-- [ ] Did I add query keys to `lib/constants/query-keys.ts`?
-- [ ] Did I add URLs to `lib/constants/urls.ts`?
+- [ ] Did I create action file in `lib/react-query/actions/`?
+- [ ] Did I create query hooks in `lib/react-query/queries/`?
+- [ ] Did I add query keys to `lib/react-query/keys.ts`?
+- [ ] Did I add URLs to `lib/constants/urls.ts` (if needed)?
 - [ ] Did I implement all three patterns (limited, infinite, specific)?
 
 ### Code Quality
@@ -202,22 +236,44 @@ Before writing ANY code:
 
 ## 🎯 Quick Reference
 
-| Need          | Use                            | Location                              |
-| ------------- | ------------------------------ | ------------------------------------- |
-| Button        | `shadcn/ui`                    | `npx shadcn@latest add button`        |
-| Data fetch    | TanStack Query + Server Action | `lib/actions/` + `lib/queries/`       |
-| Icons         | Lucide React                   | `import { Icon } from "lucide-react"` |
-| Styling       | Tailwind CSS + `cn()`          | `className={cn("...")}`               |
-| Page sections | Extract to component           | `components/sections/`                |
-| Database      | Neon (PostgreSQL)              | `lib/db/client.ts`                    |
+| Need          | Use                            | Location                                                |
+| ------------- | ------------------------------ | ------------------------------------------------------- |
+| Button        | `shadcn/ui`                    | `npx shadcn@latest add button`                          |
+| Data fetch    | TanStack Query + Server Action | `lib/react-query/actions/` + `lib/react-query/queries/` |
+| Icons         | Lucide React                   | `import { Icon } from "lucide-react"`                   |
+| Styling       | Tailwind CSS + `cn()`          | `className={cn("...")}`                                 |
+| Page sections | Extract to component           | `components/sections/`                                  |
+| Database      | Neon (PostgreSQL)              | `lib/db/client.ts`                                      |
+| URL params    | nuqs (via useAppQueryParams)   | `hooks/useAppQuery.tsx`                                 |
+| Forms         | react-hook-form + Zod          | `components/forms/` + `types/validation/`               |
+| Auth          | Clerk                          | `@clerk/nextjs`                                         |
+| Theme         | next-themes                    | `providers/theme-provider.tsx`                          |
 
 ---
 
 ## 📖 Documentation
 
-- **Component Organization:** [docs/component-organization.md](docs/component-organization.md)
-- **UI Components:** [docs/ui-components.md](docs/ui-components.md)
-- **Data Fetching:** [docs/data-fetching.md](docs/data-fetching.md)
+### Core Architecture
+
+- **[Component Organization](docs/component-organization.md)** - Component structure, folder organization, and file naming
+- **[UI Components](docs/ui-components.md)** - shadcn/ui component usage and styling
+- **[Data Fetching](docs/data-fetching.md)** - TanStack Query and server actions patterns
+
+### Detailed Patterns & Standards
+
+- **[Actions & Queries Architecture](docs/actions-queries.md)** - Table-specific actions, React Query hooks, and query keys
+- **[Forms & Validation](docs/forms-validation.md)** - Form handling with react-hook-form and Zod validation
+- **[Pagination](docs/pagination.md)** - DataBox component, manual pagination, and card-based displays
+- **[URL Parameters](docs/url-parameters.md)** - nuqs integration via useAppQueryParams hook
+- **[Authentication](docs/authentication.md)** - Clerk integration, route protection, and modal authentication
+- **[Theme (Dark/Light Mode)](docs/theme-dark-light-mode.md)** - next-themes setup, theming, and CSS variables
+- **[Internationalization](docs/internationalization.md)** - i18next setup for multi-language support
+
+### Project Standards
+
+- **[Folder & File Conventions](docs/folder-file-conventions.md)** - Project structure and naming conventions
+- **[Package Management](docs/package-management.md)** - Bun usage and dependency management
+- **[Documentation Standards](docs/documentation-standards.md)** - Documentation organization and file creation rules
 
 ---
 

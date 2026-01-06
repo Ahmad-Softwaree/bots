@@ -4,11 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { URLS } from "@/lib/constants/urls";
+import { URLS } from "@/lib/urls";
 import { motion } from "framer-motion";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { ModeToggle } from "../mode-toggle";
+import { LangToggle } from "../lang-toggle";
+import { useTranslation } from "react-i18next";
+import { MotionInteractive } from "../shared/animate";
 
 export function Header() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isAdminRoute = pathname?.startsWith("/admin");
 
@@ -18,65 +23,71 @@ export function Header() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}>
-      <div className="flex h-16 items-center justify-between">
-        <Link href={URLS.HOME} className="flex items-center gap-2">
-          <motion.div
-            whileHover={{ rotate: 360, scale: 1.1 }}
-            transition={{ duration: 0.5 }}>
-            <Bot className="h-6 w-6 text-primary" />
-          </motion.div>
-          <span className="text-base sm:text-xl font-bold">Telegram Bots</span>
-        </Link>
+      <div>
+        <div className="flex h-16 items-center justify-between gap-4">
+          <Link href={URLS.HOME} className="flex items-center gap-2 shrink-0">
+            <motion.div
+              whileHover={{ rotate: 360, scale: 1.1 }}
+              transition={{ duration: 0.5 }}>
+              <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </motion.div>
+            <span className="text-sm sm:text-base md:text-xl font-bold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent whitespace-nowrap">
+              {t("header.logo_text")}
+            </span>
+          </Link>
 
-        <nav className="flex items-center gap-2 sm:gap-4 md:gap-6">
-          {!isAdminRoute && (
-            <>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="hidden sm:block">
-                <Link
-                  href={URLS.HOME}
-                  className="text-sm font-medium transition-colors hover:text-primary">
-                  Home
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}>
-                <Link
-                  href={URLS.BOTS}
-                  className="text-xs sm:text-sm font-medium transition-colors hover:text-primary">
-                  All Bots
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}>
-                <Button asChild size="sm" className="text-xs sm:text-sm">
-                  <a
-                    href="https://github.com/Ahmad-Softwaree"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    GitHub
-                  </a>
-                </Button>
-              </motion.div>
-            </>
-          )}
-          {isAdminRoute && (
-            <>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <Button variant="outline">Sign In</Button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
-            </>
-          )}
-        </nav>
+          <nav className="flex items-center gap-1 sm:gap-2 md:gap-4">
+            {!isAdminRoute && (
+              <>
+                <MotionInteractive className="hidden md:block">
+                  <Link
+                    href={URLS.HOME}
+                    className="text-sm font-medium transition-colors hover:text-violet-600">
+                    {t("header.home")}
+                  </Link>
+                </MotionInteractive>
+                <MotionInteractive>
+                  <Link
+                    href={URLS.BOTS}
+                    className="text-xs sm:text-sm font-medium transition-colors hover:text-violet-600 px-2">
+                    {t("header.bots")}
+                  </Link>
+                </MotionInteractive>
+                <MotionInteractive className="hidden sm:block">
+                  <Button
+                    asChild
+                    size="sm"
+                    className="text-xs sm:text-sm bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700">
+                    <a
+                      href="https://github.com/Ahmad-Softwaree"
+                      target="_blank"
+                      rel="noopener noreferrer">
+                      {t("header.github_link")}
+                    </a>
+                  </Button>
+                </MotionInteractive>
+              </>
+            )}
+            {isAdminRoute && (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button variant="outline" size="sm">
+                      {t("header.sign_in")}
+                    </Button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton afterSignOutUrl="/" />
+                </SignedIn>
+              </>
+            )}
+            <div className="flex items-center gap-0.5 sm:gap-1 border-l border-border/40 pl-1 sm:pl-2 ml-1 sm:ml-2">
+              <ModeToggle />
+              <LangToggle />
+            </div>
+          </nav>
+        </div>
       </div>
     </motion.header>
   );

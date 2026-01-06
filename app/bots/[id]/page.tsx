@@ -1,7 +1,6 @@
 "use client";
 
-import { useBotById } from "@/lib/queries/bot";
-import { LoadingState } from "@/components/shared/loading-state";
+import { useGetBot } from "@/lib/react-query/queries/bot.query";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +15,7 @@ import {
   ArrowLeft,
   Activity,
 } from "lucide-react";
-import { URLS } from "@/lib/constants/urls";
+import { URLS } from "@/lib/urls";
 import dayjs from "dayjs";
 import {
   SlideUp,
@@ -25,18 +24,17 @@ import {
   MotionInteractive,
 } from "@/components/shared/animate";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import Loading from "@/components/shared/Loading";
 
 export default function BotDetailPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const id = params.id as string;
-  const { data: bot, isLoading, error } = useBotById(id);
+  const { data: bot, isLoading, error } = useGetBot(id);
 
   if (isLoading) {
-    return (
-      <div className=" max-w-screen-lg py-20">
-        <LoadingState />
-      </div>
-    );
+    return <Loading.Spinner />;
   }
 
   if (error || !bot) {
@@ -44,15 +42,17 @@ export default function BotDetailPage() {
       <div className=" max-w-screen-lg py-20">
         <FadeIn>
           <div className="text-center py-20">
-            <h1 className="text-2xl font-bold mb-4">Bot Not Found</h1>
+            <h1 className="text-2xl font-bold mb-4">
+              {t("bot_detail.not_found")}
+            </h1>
             <p className="text-muted-foreground mb-8">
-              The bot you are looking for does not exist or has been removed.
+              {t("bot_detail.not_found_desc")}
             </p>
             <MotionInteractive>
               <Button asChild>
                 <Link href={URLS.BOTS} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to All Bots
+                  {t("bot_detail.back_to_bots")}
                 </Link>
               </Button>
             </MotionInteractive>
@@ -73,7 +73,7 @@ export default function BotDetailPage() {
           <Button asChild variant="ghost" className="mb-8 gap-2">
             <Link href={URLS.BOTS}>
               <ArrowLeft className="h-4 w-4" />
-              Back to All Bots
+              {t("bot_detail.back_to_bots")}
             </Link>
           </Button>
         </motion.div>
@@ -131,12 +131,14 @@ export default function BotDetailPage() {
                       }}>
                       <Badge variant={isActive ? "default" : "destructive"}>
                         <Activity className="h-3 w-3 mr-1" />
-                        {bot.status}
+                        {isActive ? t("bot.active") : t("bot.down")}
                       </Badge>
                     </motion.div>
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
-                      <span>Created {formattedDate}</span>
+                      <span>
+                        {t("bot_detail.created_on")} {formattedDate}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -145,16 +147,16 @@ export default function BotDetailPage() {
               <Separator />
 
               <div className="prose prose-neutral dark:prose-invert max-w-none">
-                <h2 className="text-xl font-semibold mb-3">About This Bot</h2>
+                <h2 className="text-xl font-semibold mb-3">
+                  {t("bot_detail.about")}
+                </h2>
                 <p className="text-muted-foreground leading-relaxed">
                   {bot.description}
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}>
+                <MotionInteractive>
                   <Button
                     asChild={isActive}
                     size="lg"
@@ -166,29 +168,27 @@ export default function BotDetailPage() {
                         target="_blank"
                         rel="noopener noreferrer">
                         <ExternalLink className="h-5 w-5" />
-                        Open in Telegram
+                        {t("bot_detail.visit_telegram")}
                       </a>
                     ) : (
                       <>
                         <ExternalLink className="h-5 w-5" />
-                        Bot Currently Offline
+                        {t("bot.down")}
                       </>
                     )}
                   </Button>
-                </motion.div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}>
+                </MotionInteractive>
+                <MotionInteractive>
                   <Button asChild size="lg" variant="outline" className="gap-2">
                     <a
                       href={bot.repoLink}
                       target="_blank"
                       rel="noopener noreferrer">
                       <Github className="h-5 w-5" />
-                      View Source Code
+                      {t("bot_detail.view_source")}
                     </a>
                   </Button>
-                </motion.div>
+                </MotionInteractive>
               </div>
             </div>
           </SlideUp>
@@ -200,27 +200,33 @@ export default function BotDetailPage() {
             <CardContent className="p-6 space-y-6">
               <div>
                 <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wider">
-                  Quick Info
+                  {t("bot_detail.quick_info")}
                 </h3>
                 <dl className="space-y-3">
                   <div>
-                    <dt className="text-sm font-medium mb-1">Status</dt>
+                    <dt className="text-sm font-medium mb-1">
+                      {t("bot.status")}
+                    </dt>
                     <dd>
                       <Badge variant={isActive ? "default" : "destructive"}>
-                        {isActive ? "Active & Online" : "Currently Down"}
+                        {isActive ? t("bot.active") : t("bot.down")}
                       </Badge>
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium mb-1">Created</dt>
+                    <dt className="text-sm font-medium mb-1">
+                      {t("bot.created")}
+                    </dt>
                     <dd className="text-sm text-muted-foreground">
                       {formattedDate}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium mb-1">Category</dt>
+                    <dt className="text-sm font-medium mb-1">
+                      {t("bot_detail.category")}
+                    </dt>
                     <dd className="text-sm text-muted-foreground">
-                      Daily Life Automation
+                      {t("bot_detail.daily_life_automation")}
                     </dd>
                   </div>
                 </dl>
@@ -230,7 +236,7 @@ export default function BotDetailPage() {
 
               <div>
                 <h3 className="text-sm font-semibold mb-3 text-muted-foreground uppercase tracking-wider">
-                  Resources
+                  {t("bot_detail.resources")}
                 </h3>
                 <div className="space-y-2">
                   <motion.div
@@ -247,12 +253,12 @@ export default function BotDetailPage() {
                           target="_blank"
                           rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4" />
-                          Telegram Bot
+                          {t("bot_detail.telegram_bot")}
                         </a>
                       ) : (
                         <>
                           <ExternalLink className="h-4 w-4" />
-                          Bot Offline
+                          {t("bot_detail.bot_offline")}
                         </>
                       )}
                     </Button>
@@ -269,7 +275,7 @@ export default function BotDetailPage() {
                         target="_blank"
                         rel="noopener noreferrer">
                         <Github className="h-4 w-4" />
-                        GitHub Repository
+                        {t("bot_detail.github_repository")}
                       </a>
                     </Button>
                   </motion.div>
