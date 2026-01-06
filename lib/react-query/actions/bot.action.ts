@@ -18,24 +18,13 @@ export type PaginationResult<T> = {
   totalPages: number;
 };
 
-type BotWithLocalizedFields = Omit<
-  Bot,
-  "enName" | "arName" | "ckbName" | "enDesc" | "arDesc" | "ckbDesc"
-> & {
-  name: string;
-  description: string;
-};
-
 const getLanguage = async (): Promise<"en" | "ar" | "ckb"> => {
   const cookieStore = await cookies();
   const lang = cookieStore.get(ENUMs.GLOBAL.LANG_COOKIE)?.value;
   return (lang as "en" | "ar" | "ckb") || "en";
 };
 
-const mapBotToLocalized = (
-  bot: Bot,
-  lang: "en" | "ar" | "ckb"
-): BotWithLocalizedFields => {
+const mapBotToLocalized = (bot: Bot, lang: "en" | "ar" | "ckb"): Bot => {
   return {
     ...bot,
     name: lang === "en" ? bot.enName : lang === "ar" ? bot.arName : bot.ckbName,
@@ -47,7 +36,7 @@ const mapBotToLocalized = (
 export const getBots = async (
   queries?: QueryParam,
   page: number = 1
-): Promise<PaginationResult<BotWithLocalizedFields>> => {
+): Promise<PaginationResult<Bot>> => {
   try {
     const lang = await getLanguage();
     const pageNumber = Number(page) - 1 || 0;
@@ -112,7 +101,7 @@ export const getBots = async (
   }
 };
 
-export const getHomeBots = async (): Promise<BotWithLocalizedFields[]> => {
+export const getHomeBots = async (): Promise<Bot[]> => {
   const lang = await getLanguage();
   const result = await db
     .select()
@@ -124,9 +113,7 @@ export const getHomeBots = async (): Promise<BotWithLocalizedFields[]> => {
   return result.map((bot) => mapBotToLocalized(bot, lang));
 };
 
-export const getBot = async (
-  id: string
-): Promise<BotWithLocalizedFields | null> => {
+export const getBot = async (id: string): Promise<Bot | null> => {
   const lang = await getLanguage();
   const result = await db.select().from(bots).where(eq(bots.id, id)).limit(1);
 
