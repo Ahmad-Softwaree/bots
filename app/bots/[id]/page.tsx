@@ -90,7 +90,7 @@ export default function BotDetailPage() {
                 transition={{ duration: 0.3 }}>
                 <Image
                   src={bot.image}
-                  alt={bot.name}
+                  alt={bot.name || "Bot image"}
                   fill
                   className="object-cover"
                   priority
