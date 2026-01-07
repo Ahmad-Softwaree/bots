@@ -99,7 +99,8 @@
     "per_page": "لكل صفحة",
     "showing": "عرض",
     "of": "من",
-    "results": "نتيجة"
+    "results": "النتائج",
+    "return_to_home": "العودة إلى الصفحة الرئيسية"
   },
   "form": {
     "name_required": "اسم البوت مطلوب",

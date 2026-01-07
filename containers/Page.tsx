@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useAppQueryParams } from "@/hooks/useAppQuery";
 import { useFilterStore } from "@/lib/store/filter.store";
 import { useModalStore } from "@/lib/store/modal.store";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, Home } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import ActionTooltip from "@/components/shared/ActionTooltip";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Link from "next/link";
 
 interface PageProps {
   children?: React.ReactNode;
@@ -76,7 +77,21 @@ const Page = ({
             )}
           </div>
 
-          <AddButton onClick={handleAddLink} />
+          <div className="flex items-center gap-3">
+            <ActionTooltip label={t("dashboard.return_to_home")}>
+              <Button
+                asChild
+                variant="outline"
+                size="icon"
+                className="hover:bg-primary/10 hover:text-primary hover:border-primary transition-all">
+                <Link href="/">
+                  <Home className="w-4 h-4" />
+                </Link>
+              </Button>
+            </ActionTooltip>
+
+            <AddButton onClick={handleAddLink} />
+          </div>
         </div>
 
         <div className="mt-4">

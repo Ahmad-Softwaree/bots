@@ -99,7 +99,8 @@
     "per_page": "Per Page",
     "showing": "Showing",
     "of": "of",
-    "results": "results"
+    "results": "results",
+    "return_to_home": "Return to Home"
   },
   "form": {
     "name_required": "Bot name is required",

@@ -99,7 +99,8 @@
     "per_page": "بۆ هەر پەڕەیەک",
     "showing": "پیشاندانی",
     "of": "لە",
-    "results": "ئەنجام"
+    "results": "ئەنجام",
+    "return_to_home": "گەڕانەوە بۆ سەرەکی"
   },
   "form": {
     "name_required": "ناوی بۆت پێویستە",
