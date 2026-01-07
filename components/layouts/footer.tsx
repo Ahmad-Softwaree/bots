@@ -14,7 +14,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border/40 bg-background">
-      <div className="  py-12">
+      <div className="py-12">
         <SlideUp>
           <div className="grid gap-8 md:grid-cols-4">
             {/* Brand */}
@@ -77,7 +77,7 @@ export function Footer() {
                       href="https://github.com/Ahmad-Softwaree"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
+                      className="english_font text-muted-foreground hover:text-primary transition-colors flex items-center gap-2">
                       <Github className="h-4 w-4" />
                       {t("footer_links.github")}
                     </a>
@@ -91,7 +91,7 @@ export function Footer() {
                       href="https://ahmad-software.com"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-muted-foreground hover:text-primary transition-colors">
+                      className="english_font text-muted-foreground hover:text-primary transition-colors">
                       Portfolio
                     </a>
                   </motion.div>
@@ -103,14 +103,12 @@ export function Footer() {
 
         <Separator className="my-8" />
 
-        <SlideUp transition={{ delay: 0.2 }}>
-          <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground md:flex-row md:justify-between">
-            <p>
-              © {currentYear} Telegram Bots. {t("footer.rights")}
-            </p>
-            <p>{t("cta.powered_by")}</p>
-          </div>
-        </SlideUp>
+        <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground md:flex-row md:justify-between">
+          <p>
+            © {currentYear} Telegram Bots. {t("footer.rights")}
+          </p>
+          <p>{t("cta.powered_by")}</p>
+        </div>
       </div>
     </footer>
   );

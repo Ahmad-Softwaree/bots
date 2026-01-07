@@ -205,7 +205,7 @@ function Dashboard(val: Bot) {
             href={val.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-primary hover:underline">
+            className="english_font flex items-center gap-1 text-xs text-primary hover:underline">
             <ExternalLink className="h-3 w-3" />
             Telegram
           </a>
@@ -214,7 +214,7 @@ function Dashboard(val: Bot) {
             href={val.repoLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs text-primary hover:underline">
+            className="english_font flex items-center gap-1 text-xs text-primary hover:underline">
             <Github className="h-3 w-3" />
             Repository
           </a>

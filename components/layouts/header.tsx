@@ -57,7 +57,7 @@ export function Header() {
                   <Button
                     asChild
                     size="sm"
-                    className="text-xs sm:text-sm bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700">
+                    className="english_font text-xs sm:text-sm bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700">
                     <a
                       href="https://github.com/Ahmad-Softwaree"
                       target="_blank"
