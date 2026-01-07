@@ -17,11 +17,11 @@ A beautiful, modern landing page to showcase your Telegram bots with a powerful 
 
 ### Home Page
 
-![Home Page](images/screenshots/home.png)
+![Home Page](public/images/screenshots/home.png)
 
 ### Dashboard
 
-![Dashboard](images/screenshots/dashboard.png)
+![Dashboard](public/images/screenshots/dashboard.png)
 
 ## ✨ Features
 
