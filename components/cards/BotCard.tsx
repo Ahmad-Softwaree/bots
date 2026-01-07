@@ -21,7 +21,7 @@ import type { Bot } from "@/lib/db/schema";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 
-function BotCardHome(val: Bot) {
+function Home(val: Bot) {
   const { t } = useTranslation();
   const isActive = val.status === "active";
   const formattedDate = dayjs(val.createdAt).format("MMM D, YYYY");
@@ -41,7 +41,7 @@ function BotCardHome(val: Bot) {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}>
               <Image
-                src={val.image}
+                src={val.image != "" ? val.image : "/images/placeholder.svg"}
                 alt={val.name || "Bot image"}
                 fill
                 className="object-cover"
@@ -70,7 +70,11 @@ function BotCardHome(val: Bot) {
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}>
                 <Image
-                  src={val.iconImage}
+                  src={
+                    val.iconImage != ""
+                      ? val.iconImage
+                      : "/images/placeholder.svg"
+                  }
                   alt={`${val.name} icon`}
                   fill
                   className="object-cover"
@@ -140,7 +144,7 @@ function BotCardHome(val: Bot) {
   );
 }
 
-function BotCardDashboard(val: Bot) {
+function Dashboard(val: Bot) {
   const { t, i18n } = useTranslation();
   const { openModal } = useModalStore();
   const toggleStatusMutation = useToggleBotStatus({});
@@ -164,7 +168,7 @@ function BotCardDashboard(val: Bot) {
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative h-48 w-full overflow-hidden">
         <Image
-          src={val.image}
+          src={val.image != "" ? val.image : "/images/placeholder.svg"}
           alt={val.name || "Bot image"}
           fill
           className="object-cover"
@@ -180,7 +184,9 @@ function BotCardDashboard(val: Bot) {
       <CardContent className="p-4 space-y-3">
         <div className="flex items-start gap-3">
           <Image
-            src={val.iconImage}
+            src={
+              val.iconImage != "" ? val.iconImage : "/images/placeholder.svg"
+            }
             alt={`${val.name} icon`}
             width={48}
             height={48}
@@ -260,5 +266,5 @@ function BotCardDashboard(val: Bot) {
 
 export const BotCard = () => null;
 
-BotCard.Home = BotCardHome;
-BotCard.Dashboard = BotCardDashboard;
+BotCard.Home = Home;
+BotCard.Dashboard = Dashboard;

@@ -27,8 +27,16 @@ export const getBotValidation = (t: any) => {
       .string()
       .min(10, t("form.description_min"))
       .max(500, t("form.description_max")),
-    image: z.string().url(t("form.image_invalid")),
-    iconImage: z.string().url(t("form.icon_invalid")),
+    image: z.union([
+      z.string().url(t("form.image_invalid")),
+      z.instanceof(File),
+      z.literal(""),
+    ]),
+    iconImage: z.union([
+      z.string().url(t("form.icon_invalid")),
+      z.instanceof(File),
+      z.literal(""),
+    ]),
     link: z.string().url(t("form.link_invalid")),
     repoLink: z.string().url(t("form.repo_invalid")),
     status: z.enum(["active", "down"]),

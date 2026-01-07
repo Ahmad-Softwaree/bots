@@ -6,6 +6,10 @@ import { getBotValidation, type BotValidation } from "@/types/validation/bot";
 import { useTranslation } from "react-i18next";
 import { useModalStore } from "@/lib/store/modal.store";
 import { useAddBot, useUpdateBot } from "@/lib/react-query/queries/bot.query";
+import { useDeleteImage } from "@/lib/react-query/queries/uploadthing.query";
+import { useUploadThing } from "@/lib/uploadthing";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   Form,
   FormControl,
@@ -34,6 +38,9 @@ interface BotFormProps {
 export function BotForm({ state, onFinalClose }: BotFormProps) {
   const { t } = useTranslation();
   const { modalData, closeModal } = useModalStore();
+  const [isUploading, setIsUploading] = useState(false);
+
+  const { startUpload } = useUploadThing("botImageUploader");
 
   const form = useForm<BotValidation>({
     resolver: zodResolver(getBotValidation(t)),
@@ -77,18 +84,94 @@ export function BotForm({ state, onFinalClose }: BotFormProps) {
     successMessage: t("bot.updateSuccess"),
   });
 
-  const onSubmit = (data: BotValidation) => {
-    if (state === "insert") {
-      addMutation.mutate(data);
-    } else {
-      updateMutation.mutate({
-        id: modalData.id,
-        form: data,
+  const deleteImageMutation = useDeleteImage(modalData?.id || "");
+
+  const handleImageRemove = async (
+    url: string,
+    fieldName: "image" | "iconImage"
+  ) => {
+    const match = url.match(/\/f\/([^?]+)/);
+    const fileKey = match ? match[1] : null;
+
+    if (!fileKey) return;
+
+    try {
+      await deleteImageMutation.mutateAsync({
+        fileKey,
+        fieldName,
       });
+
+      // Only clear the form field if deletion succeeded
+      form.setValue(fieldName, "");
+    } catch (error) {
+      // Error is handled by the mutation, image will stay displayed
+      console.error("Failed to delete image:", error);
     }
   };
 
-  const isLoading = addMutation.isPending || updateMutation.isPending;
+  const onSubmit = async (data: BotValidation) => {
+    try {
+      setIsUploading(true);
+
+      // Upload files if they are File objects
+      let imageUrl = data.image;
+      let iconImageUrl = data.iconImage;
+
+      // Collect files to upload
+      const filesToUpload: File[] = [];
+      if (data.image instanceof File) {
+        filesToUpload.push(data.image);
+      }
+      if (data.iconImage instanceof File) {
+        filesToUpload.push(data.iconImage);
+      }
+
+      // Upload all files at once if any
+      if (filesToUpload.length > 0) {
+        const uploadResults = await startUpload(filesToUpload);
+
+        if (!uploadResults) {
+          toast.error(t("bot.imageUploadError") || "Failed to upload images");
+          return;
+        }
+
+        let uploadIndex = 0;
+
+        if (data.image instanceof File) {
+          imageUrl = uploadResults[uploadIndex]?.url || "";
+          uploadIndex++;
+        }
+
+        if (data.iconImage instanceof File) {
+          iconImageUrl = uploadResults[uploadIndex]?.url || "";
+        }
+      }
+
+      // Prepare final data with URLs
+      const finalData = {
+        ...data,
+        image: typeof imageUrl === "string" ? imageUrl : "",
+        iconImage: typeof iconImageUrl === "string" ? iconImageUrl : "",
+      };
+
+      if (state === "insert") {
+        addMutation.mutate(finalData);
+      } else {
+        updateMutation.mutate({
+          id: modalData.id,
+          form: finalData,
+        });
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(t("bot.imageUploadError") || "Failed to upload images");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const isLoading =
+    addMutation.isPending || updateMutation.isPending || isUploading;
 
   return (
     <Form {...form}>
@@ -199,7 +282,7 @@ export function BotForm({ state, onFinalClose }: BotFormProps) {
                 <ImageUpload
                   value={field.value}
                   onChange={field.onChange}
-                  onRemove={() => field.onChange("")}
+                  onRemove={(url) => handleImageRemove(url, "image")}
                 />
               </FormControl>
               <FormMessage />
@@ -217,7 +300,7 @@ export function BotForm({ state, onFinalClose }: BotFormProps) {
                 <ImageUpload
                   value={field.value}
                   onChange={field.onChange}
-                  onRemove={() => field.onChange("")}
+                  onRemove={(url) => handleImageRemove(url, "iconImage")}
                 />
               </FormControl>
               <FormMessage />

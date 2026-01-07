@@ -80,7 +80,10 @@
     "deleteSuccess": "Bot deleted successfully",
     "deleteError": "Failed to delete bot",
     "statusToggleSuccess": "Bot status changed successfully",
-    "statusToggleError": "Failed to toggle bot status"
+    "statusToggleError": "Failed to toggle bot status",
+    "imageDeleteSuccess": "Image deleted successfully",
+    "imageDeleteError": "Failed to delete image",
+    "imageUploadError": "Failed to upload images"
   },
   "dashboard": {
     "title": "Dashboard",

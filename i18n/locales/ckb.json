@@ -80,7 +80,10 @@
     "deleteSuccess": "بۆت بەسەرکەوتوویی سڕایەوە",
     "deleteError": "شکستی هێنا لە سڕینەوەی بۆت",
     "statusToggleSuccess": "دۆخی بۆت بەسەرکەوتوویی گۆڕا",
-    "statusToggleError": "شکستی هێنا لە گۆڕینی دۆخ"
+    "statusToggleError": "شکستی هێنا لە گۆڕینی دۆخ",
+    "imageDeleteSuccess": "وێنە بەسەرکەوتوویی سڕایەوە",
+    "imageDeleteError": "سڕینەوەی وێنە سەری نەکەوت",
+    "imageUploadError": "بارکردنی وێنەکان سەرکەوتوو نەبوو"
   },
   "dashboard": {
     "title": "پانێڵ",

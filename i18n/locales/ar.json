@@ -80,7 +80,10 @@
     "deleteSuccess": "تم حذف البوت بنجاح",
     "deleteError": "فشل في حذف البوت",
     "statusToggleSuccess": "تم تغيير حالة البوت بنجاح",
-    "statusToggleError": "فشل في تغيير حالة البوت"
+    "statusToggleError": "فشل تغيير حالة البوت",
+    "imageDeleteSuccess": "تم حذف الصورة بنجاح",
+    "imageDeleteError": "فشل حذف الصورة",
+    "imageUploadError": "فشل رفع الصور"
   },
   "dashboard": {
     "title": "لوحة التحكم",

@@ -6,8 +6,10 @@ import { desc, eq, and, ilike, or, sql } from "drizzle-orm";
 import type { QueryParam } from "@/types/types";
 import { PER_PAGE, ENUMs } from "@/lib/enum";
 import { auth } from "@clerk/nextjs/server";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { UTApi } from "uploadthing/server";
+
+const utapi = new UTApi();
 
 export type CRUDReturn = { message: string; data?: any };
 
@@ -130,10 +132,6 @@ export const addBot = async (
     })
     .returning();
 
-  revalidatePath("/");
-  revalidatePath("/bots");
-  revalidatePath("/admin/dashboard");
-
   return {
     message: "Bot created successfully",
     data: newBot,
@@ -157,11 +155,6 @@ export const updateBot = async (
     throw new Error("Bot not found");
   }
 
-  revalidatePath("/");
-  revalidatePath("/bots");
-  revalidatePath(`/bots/${id}`);
-  revalidatePath("/admin/dashboard");
-
   return {
     message: "Bot updated successfully",
     data: updatedBot,
@@ -181,9 +174,26 @@ export const deleteBot = async (id: string): Promise<CRUDReturn> => {
     throw new Error("Bot not found");
   }
 
-  revalidatePath("/");
-  revalidatePath("/bots");
-  revalidatePath("/admin/dashboard");
+  // Delete images from UploadThing
+  try {
+    const imageUrls = [deletedBot.image, deletedBot.iconImage].filter(Boolean);
+
+    // Extract file keys from URLs
+    const fileKeys = imageUrls
+      .map((url) => {
+        const match = url.match(/\/f\/([^?]+)/);
+        return match ? match[1] : null;
+      })
+      .filter((key): key is string => key !== null);
+
+    if (fileKeys.length > 0) {
+      // Delete files directly using UTApi
+      await utapi.deleteFiles(fileKeys);
+    }
+  } catch (error) {
+    console.error("Failed to delete images from UploadThing:", error);
+    // Continue with bot deletion even if image deletion fails
+  }
 
   return {
     message: "Bot deleted successfully",
@@ -212,11 +222,6 @@ export const toggleBotStatus = async (
   if (!updatedBot) {
     throw new Error("Bot not found");
   }
-
-  revalidatePath("/");
-  revalidatePath("/bots");
-  revalidatePath(`/bots/${id}`);
-  revalidatePath("/admin/dashboard");
 
   return {
     message: `Bot status changed to ${newStatus}`,

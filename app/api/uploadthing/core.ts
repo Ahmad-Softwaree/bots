@@ -7,7 +7,7 @@ export const ourFileRouter = {
   botImageUploader: f({
     image: {
       maxFileSize: "4MB",
-      maxFileCount: 1,
+      maxFileCount: 2,
     },
   })
     .middleware(async () => {
