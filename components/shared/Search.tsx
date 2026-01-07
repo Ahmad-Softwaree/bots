@@ -1,4 +1,4 @@
-import { ENUMs } from "@/lib/enum";
+import { ENUMs } from "@/lib/enums";
 import { Search as SearchIcon, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ENUMs } from "@/lib/enum";
+import { ENUMs } from "@/lib/enums";
 import {
   parseAsInteger,
   parseAsString,

@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { setCookie } from "@/lib/config/cookie.config";
-import { ENUMs } from "@/lib/enum";
+import { ENUMs } from "@/lib/enums";
 import { ChevronDown, Languages } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";

@@ -4,7 +4,7 @@ import { db } from "@/lib/db/client";
 import { bots, type Bot } from "@/lib/db/schema";
 import { desc, eq, and, ilike, or, sql } from "drizzle-orm";
 import type { QueryParam } from "@/types/types";
-import { PER_PAGE, ENUMs } from "@/lib/enum";
+import { PER_PAGE, ENUMs } from "@/lib/enums";
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { UTApi } from "uploadthing/server";

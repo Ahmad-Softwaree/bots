@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { getCookie } from "@/lib/config/cookie.config";
-import { ENUMs } from "@/lib/enum";
+import { ENUMs } from "@/lib/enums";
 import i18n from "@/i18n/i18n";
 
 function LanguageSetup() {
