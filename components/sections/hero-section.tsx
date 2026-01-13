@@ -17,7 +17,6 @@ export function HeroSection() {
   return (
     <section className="py-20 md:py-28 lg:py-32">
       <div className="flex flex-col items-center gap-8 text-center">
-        {/* Gradient Background Orbs */}
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl animate-pulse" />
           <div

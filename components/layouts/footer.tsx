@@ -4,8 +4,11 @@ import Link from "next/link";
 import { Bot, Github } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { URLS } from "@/lib/urls";
-import { SlideUp } from "@/components/shared/animate";
-import { motion } from "framer-motion";
+import {
+  SlideUp,
+  FloatingIconMotion,
+  SlideMotion,
+} from "@/components/shared/animate";
 import { useTranslation } from "react-i18next";
 
 export function Footer() {
@@ -20,11 +23,9 @@ export function Footer() {
             {/* Brand */}
             <div className="md:col-span-2">
               <Link href={URLS.HOME} className="flex items-center gap-2 mb-4">
-                <motion.div
-                  whileHover={{ rotate: 360, scale: 1.1 }}
-                  transition={{ duration: 0.5 }}>
+                <FloatingIconMotion>
                   <Bot className="h-6 w-6 text-primary" />
-                </motion.div>
+                </FloatingIconMotion>
                 <span className="text-xl font-bold">Telegram Bots</span>
               </Link>
               <p className="text-sm text-muted-foreground max-w-md">
@@ -39,26 +40,22 @@ export function Footer() {
               </h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}>
+                  <SlideMotion>
                     <Link
                       href={URLS.HOME}
                       className="text-muted-foreground hover:text-primary transition-colors">
                       {t("footer_links.home")}
                     </Link>
-                  </motion.div>
+                  </SlideMotion>
                 </li>
                 <li>
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}>
+                  <SlideMotion>
                     <Link
                       href={URLS.BOTS}
                       className="text-muted-foreground hover:text-primary transition-colors">
                       {t("footer_links.all_bots")}
                     </Link>
-                  </motion.div>
+                  </SlideMotion>
                 </li>
               </ul>
             </div>
@@ -70,9 +67,7 @@ export function Footer() {
               </h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}>
+                  <SlideMotion>
                     <a
                       href="https://github.com/Ahmad-Softwaree"
                       target="_blank"
@@ -81,12 +76,10 @@ export function Footer() {
                       <Github className="h-4 w-4" />
                       {t("footer_links.github")}
                     </a>
-                  </motion.div>
+                  </SlideMotion>
                 </li>
                 <li>
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}>
+                  <SlideMotion>
                     <a
                       href="https://ahmad-software.com"
                       target="_blank"
@@ -94,7 +87,7 @@ export function Footer() {
                       className="english_font text-muted-foreground hover:text-primary transition-colors">
                       Portfolio
                     </a>
-                  </motion.div>
+                  </SlideMotion>
                 </li>
               </ul>
             </div>

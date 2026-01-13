@@ -33,6 +33,7 @@ This file contains **strict coding standards and architecture patterns** for thi
 - **Tailwind CSS 4** - For styling (with CSS variables)
 - **Lucide React** - Icon library
 - **cn() utility** from `@/lib/utils` - For conditional styling
+- **framer-motion** - Animation library (use via reusable components in animate.tsx)
 
 #### **Data Fetching & State Management**
 
@@ -248,6 +249,7 @@ Before writing ANY code:
 | Forms         | react-hook-form + Zod          | `components/forms/` + `types/validation/`               |
 | Auth          | Clerk                          | `@clerk/nextjs`                                         |
 | Theme         | next-themes                    | `providers/theme-provider.tsx`                          |
+| Animations    | framer-motion                  | `components/shared/animate.tsx`                         |
 
 ---
 
@@ -268,6 +270,7 @@ Before writing ANY code:
 - **[Authentication](docs/authentication.md)** - Clerk integration, route protection, and modal authentication
 - **[Theme (Dark/Light Mode)](docs/theme-dark-light-mode.md)** - next-themes setup, theming, and CSS variables
 - **[Internationalization](docs/internationalization.md)** - i18next setup for multi-language support
+- **[Motion & Animations](docs/motion.md)** - framer-motion patterns and reusable animation components
 
 ### Project Standards
 

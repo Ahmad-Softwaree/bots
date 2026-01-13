@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getBotValidation, type BotValidation } from "@/types/validation/bot";
 import { useTranslation } from "react-i18next";
 import { useModalStore } from "@/lib/store/modal.store";
 import { useAddBot, useUpdateBot } from "@/lib/react-query/queries/bot.query";
@@ -29,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/shared/image-upload";
+import { BotSchema, getBotSchema } from "@/validation/bot.validation";
 
 interface BotFormProps {
   state: "insert" | "update";
@@ -36,14 +36,14 @@ interface BotFormProps {
 }
 
 export function BotForm({ state, onFinalClose }: BotFormProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { modalData, closeModal } = useModalStore();
   const [isUploading, setIsUploading] = useState(false);
 
   const { startUpload } = useUploadThing("botImageUploader");
 
-  const form = useForm<BotValidation>({
-    resolver: zodResolver(getBotValidation(t)),
+  const form = useForm<BotSchema>({
+    resolver: zodResolver(getBotSchema(i18n)),
     defaultValues:
       state === "update" && modalData
         ? {
@@ -101,23 +101,19 @@ export function BotForm({ state, onFinalClose }: BotFormProps) {
         fieldName,
       });
 
-      // Only clear the form field if deletion succeeded
       form.setValue(fieldName, "");
     } catch (error) {
-      // Error is handled by the mutation, image will stay displayed
       console.error("Failed to delete image:", error);
     }
   };
 
-  const onSubmit = async (data: BotValidation) => {
+  const onSubmit = async (data: BotSchema) => {
     try {
       setIsUploading(true);
 
-      // Upload files if they are File objects
       let imageUrl = data.image;
       let iconImageUrl = data.iconImage;
 
-      // Collect files to upload
       const filesToUpload: File[] = [];
       if (data.image instanceof File) {
         filesToUpload.push(data.image);
@@ -126,7 +122,6 @@ export function BotForm({ state, onFinalClose }: BotFormProps) {
         filesToUpload.push(data.iconImage);
       }
 
-      // Upload all files at once if any
       if (filesToUpload.length > 0) {
         const uploadResults = await startUpload(filesToUpload);
 
@@ -147,7 +142,6 @@ export function BotForm({ state, onFinalClose }: BotFormProps) {
         }
       }
 
-      // Prepare final data with URLs
       const finalData = {
         ...data,
         image: typeof imageUrl === "string" ? imageUrl : "",

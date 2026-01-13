@@ -3,8 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search } from "lucide-react";
-import { motion } from "framer-motion";
-import { StaggerContainer, MotionInteractive } from "./animate";
+import {
+  StaggerContainer,
+  MotionInteractive,
+  SlideDown,
+  SlideUp,
+  ContentFadeIn,
+} from "./animate";
 import { useState, useEffect } from "react";
 
 interface PaginatedListProps<T> {
@@ -110,11 +115,7 @@ export function PaginatedList<T extends { id: string }>({
     <div className="py-20">
       {/* Header Section */}
       {title && (
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}>
+        <SlideDown className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl mb-4">
             {title}
           </h1>
@@ -123,16 +124,12 @@ export function PaginatedList<T extends { id: string }>({
               {description.replace("{count}", data.length.toString())}
             </p>
           )}
-        </motion.div>
+        </SlideDown>
       )}
 
       {/* Search Bar */}
       {enableSearch && (
-        <motion.div
-          className="max-w-md mx-auto mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}>
+        <SlideUp className="max-w-md mx-auto mb-8" transition={{ delay: 0.1 }}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -143,22 +140,18 @@ export function PaginatedList<T extends { id: string }>({
               className="pl-10"
             />
           </div>
-        </motion.div>
+        </SlideUp>
       )}
 
       {/* Empty State */}
       {data.length === 0 ? (
-        <motion.div
-          className="text-center py-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}>
+        <SlideUp className="text-center py-20">
           <p className="text-muted-foreground">
             {searchInput
               ? `No results found for "${searchInput}"`
               : emptyMessage}
           </p>
-        </motion.div>
+        </SlideUp>
       ) : (
         <>
           {/* Data Grid */}
@@ -170,12 +163,7 @@ export function PaginatedList<T extends { id: string }>({
 
           {/* Load More Button */}
           {hasNextPage && (
-            <motion.div
-              className="mt-12 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}>
+            <ContentFadeIn className="mt-12 text-center">
               <MotionInteractive>
                 <Button
                   onClick={() => fetchNextPage()}
@@ -192,7 +180,7 @@ export function PaginatedList<T extends { id: string }>({
                   )}
                 </Button>
               </MotionInteractive>
-            </motion.div>
+            </ContentFadeIn>
           )}
         </>
       )}

@@ -8,18 +8,6 @@ export type ModalTypes =
   | "success"
   | "filter"
   | "restore"
-  | "caption_info"
-  | "caption_form"
-  | "setting_info"
-  | "setting_form"
-  | "show_image"
-  | "add_item_cost"
-  | "add_item_variant"
-  | "add_customer_address"
-  | "see_item_tags"
-  | "reject_order"
-  | "reject_coupon"
-  | "exchange_point"
   | null;
 
 interface ModalState {

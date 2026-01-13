@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { setCookie } from "@/lib/config/cookie.config";
 import { ENUMs } from "@/lib/enums";
-import { ChevronDown, Languages } from "lucide-react";
+import { Languages } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
 
@@ -35,10 +37,7 @@ export function LangToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-colors">
+        <Button variant="outline" size="icon" className="rounded-full">
           <Languages className="h-5 w-5" />
         </Button>
       </DropdownMenuTrigger>
@@ -52,8 +51,14 @@ export function LangToggle() {
             onClick={() => setSelectedLang(val)}
             className={`${
               i18n.language === val ? "bg-primary text-primary-foreground" : ""
-            } focus:bg-primary focus:text-primary-foreground transition-colors duration-200 cursor-pointer`}>
-            {i18n.t(`langs.${val}` as any)}
+            } focus:bg-primary focus:text-primary-foreground transition-colors duration-200 cursor-pointer ${
+              val === "en"
+                ? "english_font"
+                : val === "ar"
+                ? "arabic_font"
+                : "kurdish_font"
+            }`}>
+            {String(i18n.t(`langs.${val}` as any))}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

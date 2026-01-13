@@ -18,7 +18,14 @@ import { Label } from "@/components/ui/label";
 import { ExternalLink, Github, Calendar, Edit, Trash2 } from "lucide-react";
 import { URLS } from "@/lib/urls";
 import type { Bot } from "@/lib/db/schema";
-import { motion } from "framer-motion";
+import {
+  CardFadeUpMotion,
+  ImageScaleMotion,
+  BadgeScaleMotion,
+  CardHoverMotion,
+  ButtonHoverMotion,
+  IconButtonMotion,
+} from "@/components/shared/animate";
 import dayjs from "dayjs";
 
 function Home(val: Bot) {
@@ -27,19 +34,11 @@ function Home(val: Bot) {
   const formattedDate = dayjs(val.createdAt).format("MMM D, YYYY");
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      whileHover={{ y: -8 }}
-      className="h-full">
+    <CardFadeUpMotion className="h-full">
       <Card className="group overflow-hidden border-border/40 transition-all hover:border-primary/50 hover:shadow-lg h-full flex flex-col">
         <CardHeader className="p-0">
           <div className="relative aspect-video w-full overflow-hidden bg-muted">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.3 }}>
+            <ImageScaleMotion>
               <Image
                 src={val.image != "" ? val.image : "/images/placeholder.svg"}
                 alt={val.name || "Bot image"}
@@ -47,28 +46,21 @@ function Home(val: Bot) {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
-            </motion.div>
-            <motion.div
-              className="absolute top-3 right-3"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}>
+            </ImageScaleMotion>
+            <BadgeScaleMotion className="absolute top-3 right-3">
               <Badge
                 variant={isActive ? "default" : "destructive"}
                 className="shadow-md">
                 {isActive ? t("bot.active") : t("bot.down")}
               </Badge>
-            </motion.div>
+            </BadgeScaleMotion>
           </div>
         </CardHeader>
 
         <CardContent className="p-6 flex-1">
           <Link href={URLS.BOT_DETAIL(val.id)} className="group/title">
             <div className="flex items-start gap-3 mb-3">
-              <motion.div
-                className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-muted"
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: "spring", stiffness: 300 }}>
+              <CardHoverMotion className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
                 <Image
                   src={
                     val.iconImage != ""
@@ -80,7 +72,7 @@ function Home(val: Bot) {
                   className="object-cover"
                   sizes="48px"
                 />
-              </motion.div>
+              </CardHoverMotion>
               <div className="flex-1 min-w-0">
                 <h3 className="text-xl font-semibold line-clamp-1 group-hover/title:text-primary transition-colors">
                   {val.name}
@@ -99,10 +91,7 @@ function Home(val: Bot) {
         </CardContent>
 
         <CardFooter className="flex gap-2 p-6 pt-0">
-          <motion.div
-            className="flex-1"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}>
+          <ButtonHoverMotion className="flex-1">
             <Button
               asChild={isActive}
               variant="default"
@@ -120,10 +109,8 @@ function Home(val: Bot) {
                 </>
               )}
             </Button>
-          </motion.div>
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.9 }}>
+          </ButtonHoverMotion>
+          <IconButtonMotion>
             <Button
               asChild
               variant="outline"
@@ -137,10 +124,10 @@ function Home(val: Bot) {
                 <Github className="h-4 w-4" />
               </a>
             </Button>
-          </motion.div>
+          </IconButtonMotion>
         </CardFooter>
       </Card>
-    </motion.div>
+    </CardFadeUpMotion>
   );
 }
 

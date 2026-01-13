@@ -132,11 +132,22 @@
     "link_deleted": "بۆت بەسەرکەوتوویی سڕایەوە"
   },
   "validation": {
-    "required": "ئەم خانەیە پێویستە",
-    "invalid_email": "ئیمەیڵی نادروست",
-    "invalid_url": "بەستەری نادروست",
-    "min_length": "دەبێت لانیکەم {{count}} پیت بێت",
-    "max_length": "دەبێت لانیزۆر {{count}} پیت بێت"
+    "enName_required": "ناوی بۆت پێویستە",
+    "enName_too_long": "ناو زۆر درێژە",
+    "arName_required": "ناوی بۆت پێویستە",
+    "arName_too_long": "ناو زۆر درێژە",
+    "ckbName_required": "ناوی بۆت پێویستە",
+    "ckbName_too_long": "ناو زۆر درێژە",
+    "enDesc_min": "پێویستە وەسفەکە لانیکەم ١٠ پیت بێت",
+    "enDesc_max": "وەسف زۆر درێژە",
+    "arDesc_min": "پێویستە وەسفەکە لانیکەم ١٠ پیت بێت",
+    "arDesc_max": "وەسف زۆر درێژە",
+    "ckbDesc_min": "پێویستە وەسفەکە لانیکەم ١٠ پیت بێت",
+    "ckbDesc_max": "وەسف زۆر درێژە",
+    "image_invalid": "پێویستە بەستەرێکی دروستی وێنە بێت",
+    "icon_invalid": "پێویستە بەستەرێکی دروستی ئایکۆن بێت",
+    "link_invalid": "پێویستە بەستەرێکی دروستی تێلەگرام بێت",
+    "repo_invalid": "پێویستە بەستەرێکی دروستی گیتهاب بێت"
   },
   "pagination": {
     "showing": "پیشاندانی",

@@ -5,8 +5,6 @@ import { Header } from "@/components/layouts/header";
 import { Footer } from "@/components/layouts/footer";
 import { Providers } from "./providers";
 import { PageTransition } from "@/components/shared/page-transition";
-import { ClerkProvider } from "@clerk/nextjs";
-import { shadcn } from "@clerk/themes";
 import { Toaster } from "sonner";
 import { ModalManager } from "@/components/shared/ModalManager";
 
@@ -32,24 +30,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: shadcn,
-      }}>
-      <html lang="en" className="dark" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
-          <Providers>
-            <Header />
-            <main className="flex-1 min-h-screen">
-              <PageTransition>{children}</PageTransition>
-            </main>
-            <Footer />
-            <ModalManager />
-            <Toaster position="top-center" richColors />
-          </Providers>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
+        <Providers>
+          <Header />
+          <main className="flex-1 min-h-screen">
+            <PageTransition>{children}</PageTransition>
+          </main>
+          <Footer />
+          <ModalManager />
+          <Toaster position="top-center" richColors />
+        </Providers>
+      </body>
+    </html>
   );
 }

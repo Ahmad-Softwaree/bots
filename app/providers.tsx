@@ -5,6 +5,8 @@ import { useState } from "react";
 import { ThemeProvider } from "@/providers/theme-provider";
 import LanguageProvider from "@/providers/language-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -20,18 +22,24 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <NuqsAdapter>
-        <LanguageProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange>
-            {children}
-          </ThemeProvider>
-        </LanguageProvider>
-      </NuqsAdapter>
-    </QueryClientProvider>
+    <ClerkProvider
+      afterSignOutUrl={"/"}
+      appearance={{
+        baseTheme: shadcn,
+      }}>
+      <QueryClientProvider client={queryClient}>
+        <NuqsAdapter>
+          <LanguageProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange>
+              {children}
+            </ThemeProvider>
+          </LanguageProvider>
+        </NuqsAdapter>
+      </QueryClientProvider>
+    </ClerkProvider>
   );
 }

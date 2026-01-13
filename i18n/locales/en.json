@@ -132,11 +132,22 @@
     "link_deleted": "Bot deleted successfully"
   },
   "validation": {
-    "required": "This field is required",
-    "invalid_email": "Invalid email address",
-    "invalid_url": "Invalid URL",
-    "min_length": "Must be at least {{count}} characters",
-    "max_length": "Must be at most {{count}} characters"
+    "enName_required": "Bot name is required",
+    "enName_too_long": "Name is too long",
+    "arName_required": "Bot name is required",
+    "arName_too_long": "Name is too long",
+    "ckbName_required": "Bot name is required",
+    "ckbName_too_long": "Name is too long",
+    "enDesc_min": "Description must be at least 10 characters",
+    "enDesc_max": "Description is too long",
+    "arDesc_min": "Description must be at least 10 characters",
+    "arDesc_max": "Description is too long",
+    "ckbDesc_min": "Description must be at least 10 characters",
+    "ckbDesc_max": "Description is too long",
+    "image_invalid": "Image link must be valid",
+    "icon_invalid": "Icon link must be valid",
+    "link_invalid": "Telegram link must be valid",
+    "repo_invalid": "GitHub link must be valid"
   },
   "pagination": {
     "showing": "Showing",

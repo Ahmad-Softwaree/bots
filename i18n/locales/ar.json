@@ -132,11 +132,22 @@
     "link_deleted": "تم حذف البوت بنجاح"
   },
   "validation": {
-    "required": "هذا الحقل مطلوب",
-    "invalid_email": "عنوان بريد إلكتروني غير صالح",
-    "invalid_url": "رابط غير صالح",
-    "min_length": "يجب أن يكون على الأقل {{count}} حرف",
-    "max_length": "يجب أن يكون على الأكثر {{count}} حرف"
+    "enName_required": "اسم البوت مطلوب",
+    "enName_too_long": "الاسم طويل جدًا",
+    "arName_required": "اسم البوت مطلوب",
+    "arName_too_long": "الاسم طويل جدًا",
+    "ckbName_required": "اسم البوت مطلوب",
+    "ckbName_too_long": "الاسم طويل جدًا",
+    "enDesc_min": "يجب أن يكون الوصف على الأقل 10 أحرف",
+    "enDesc_max": "الوصف طويل جدًا",
+    "arDesc_min": "يجب أن يكون الوصف على الأقل 10 أحرف",
+    "arDesc_max": "الوصف طويل جدًا",
+    "ckbDesc_min": "يجب أن يكون الوصف على الأقل 10 أحرف",
+    "ckbDesc_max": "الوصف طويل جدًا",
+    "image_invalid": "يجب أن يكون رابط الصورة صالحًا",
+    "icon_invalid": "يجب أن يكون رابط الأيقونة صالحًا",
+    "link_invalid": "يجب أن يكون رابط تيليجرام صالحًا",
+    "repo_invalid": "يجب أن يكون رابط GitHub صالحًا"
   },
   "pagination": {
     "showing": "عرض",

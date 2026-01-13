@@ -22,8 +22,12 @@ import {
   Scale,
   FadeIn,
   MotionInteractive,
+  BackBtnMotion,
+  ImageScaleMotion,
+  CardHoverMotion,
+  BadgeScaleMotion,
+  SlideMotion,
 } from "@/components/shared/animate";
-import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import Loading from "@/components/shared/Loading";
 
@@ -69,14 +73,14 @@ export default function BotDetailPage() {
     <div className=" max-w-screen-lg py-12 md:py-20">
       {/* Back button */}
       <SlideUp>
-        <motion.div whileHover={{ x: -5 }} transition={{ duration: 0.2 }}>
+        <BackBtnMotion>
           <Button asChild variant="ghost" className="mb-8 gap-2">
             <Link href={URLS.BOTS}>
               <ArrowLeft className="h-4 w-4" />
               {t("bot_detail.back_to_bots")}
             </Link>
           </Button>
-        </motion.div>
+        </BackBtnMotion>
       </SlideUp>
 
       <div className="grid gap-8 md:grid-cols-3">
@@ -85,9 +89,7 @@ export default function BotDetailPage() {
           {/* Hero image */}
           <Scale>
             <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-muted">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.3 }}>
+              <ImageScaleMotion>
                 <Image
                   src={bot.image}
                   alt={bot.name || "Bot image"}
@@ -96,7 +98,7 @@ export default function BotDetailPage() {
                   priority
                   sizes="(max-width: 768px) 100vw, 66vw"
                 />
-              </motion.div>
+              </ImageScaleMotion>
             </div>
           </Scale>
 
@@ -104,10 +106,7 @@ export default function BotDetailPage() {
           <SlideUp>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <motion.div
-                  className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-muted"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  transition={{ type: "spring", stiffness: 300 }}>
+                <CardHoverMotion className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl bg-muted">
                   <Image
                     src={bot.iconImage}
                     alt={`${bot.name} icon`}
@@ -115,25 +114,18 @@ export default function BotDetailPage() {
                     className="object-cover"
                     sizes="64px"
                   />
-                </motion.div>
+                </CardHoverMotion>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-3xl font-bold tracking-tight sm:text-4xl mb-2">
                     {bot.name}
                   </h1>
                   <div className="flex flex-wrap items-center gap-3">
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{
-                        delay: 0.2,
-                        type: "spring",
-                        stiffness: 200,
-                      }}>
+                    <BadgeScaleMotion>
                       <Badge variant={isActive ? "default" : "destructive"}>
                         <Activity className="h-3 w-3 mr-1" />
                         {isActive ? t("bot.active") : t("bot.down")}
                       </Badge>
-                    </motion.div>
+                    </BadgeScaleMotion>
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                       <Calendar className="h-4 w-4" />
                       <span>
@@ -239,9 +231,7 @@ export default function BotDetailPage() {
                   {t("bot_detail.resources")}
                 </h3>
                 <div className="space-y-2">
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}>
+                  <SlideMotion>
                     <Button
                       asChild={isActive}
                       variant="outline"
@@ -262,10 +252,8 @@ export default function BotDetailPage() {
                         </>
                       )}
                     </Button>
-                  </motion.div>
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}>
+                  </SlideMotion>
+                  <SlideMotion>
                     <Button
                       asChild
                       variant="outline"
@@ -278,7 +266,7 @@ export default function BotDetailPage() {
                         {t("bot_detail.github_repository")}
                       </a>
                     </Button>
-                  </motion.div>
+                  </SlideMotion>
                 </div>
               </div>
             </CardContent>

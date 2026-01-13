@@ -86,6 +86,11 @@
   font-weight: 500;
   font-style: normal;
 }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
 
 @theme inline {
   --font-bukra: bukra, "sans-serif";
