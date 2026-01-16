@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { flushSync } from "react-dom";
 
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Button } from "./button";
+import { setCookie } from "@/lib/config/cookie.config";
 
 interface AnimatedThemeTogglerProps
   extends React.ComponentPropsWithoutRef<"button"> {
@@ -25,6 +26,7 @@ export const AnimatedThemeToggler = ({
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
       setTheme(isDark ? "dark" : "light");
+      setCookie("theme", isDark ? "dark" : "light");
     };
 
     updateTheme();
@@ -44,6 +46,7 @@ export const AnimatedThemeToggler = ({
     await document.startViewTransition(() => {
       flushSync(() => {
         setTheme(theme == "light" ? "dark" : "light");
+        setCookie("theme", theme == "light" ? "dark" : "light");
       });
     }).ready;
 

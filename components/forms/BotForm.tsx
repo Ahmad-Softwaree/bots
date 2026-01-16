@@ -29,13 +29,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { BotSchema, getBotSchema } from "@/validation/bot.validation";
+import { FormProps } from "@/types/global";
 
-interface BotFormProps {
-  state: "insert" | "update";
-  onFinalClose?: () => void;
-}
-
-export function BotForm({ state, onFinalClose }: BotFormProps) {
+export function BotForm({ state, onFinalClose }: FormProps) {
   const { t, i18n } = useTranslation();
   const { modalData, closeModal } = useModalStore();
   const [isUploading, setIsUploading] = useState(false);

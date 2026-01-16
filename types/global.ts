@@ -98,3 +98,7 @@ export type PaginationParams = { page: number; limit: number };
 export type QueryParam = {
   [key: string]: string | number | boolean | undefined | number[];
 };
+export type FormProps = {
+  state: "insert" | "update";
+  onFinalClose?: () => void;
+};
