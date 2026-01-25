@@ -33,7 +33,7 @@ This file contains **strict coding standards and architecture patterns** for thi
 - **Tailwind CSS 4** - For styling (with CSS variables)
 - **Lucide React** - Icon library
 - **cn() utility** from `@/lib/utils` - For conditional styling
-- **framer-motion** - Animation library (use via reusable components in animate.tsx)
+- **motion** - Animation library (use via reusable components in animate.tsx)
 
 #### **Data Fetching & State Management**
 
@@ -57,7 +57,7 @@ This file contains **strict coding standards and architecture patterns** for thi
 
 #### **URL & State Management**
 
-- **nuqs** - Type-safe URL parameter management (accessed via useAppQueryParams hook)
+- **nuqs** - Type-safe URL parameter management (specific hooks: usePaginationQuery, useSearchQuery, useBotsQueries)
 
 #### **Authentication**
 
@@ -70,8 +70,7 @@ This file contains **strict coding standards and architecture patterns** for thi
 
 #### **Internationalization**
 
-- **i18next** - Translation framework
-- **react-i18next** - React bindings for i18next
+- **next-intl** - Internationalization framework for Next.js
 
 #### **File Uploads** (if needed)
 
@@ -90,8 +89,10 @@ This file contains **strict coding standards and architecture patterns** for thi
 - ❌ Icon libraries: Font Awesome, React Icons, Heroicons (use Lucide only)
 - ❌ Other auth providers: Auth.js (NextAuth), Supabase Auth, Firebase Auth (use Clerk only)
 - ❌ Other validation: Yup, Joi, class-validator (use Zod only)
-- ❌ Raw URL params: searchParams, useSearchParams, URLSearchParams (use nuqs via useAppQueryParams)
+- ❌ Raw URL params: searchParams, useSearchParams, URLSearchParams (use nuqs via specific hooks)
 - ❌ Package managers: npm, yarn, pnpm (use Bun only)
+- ❌ Other animation libraries: framer-motion (use motion only)
+- ❌ Other i18n libraries: react-i18next, i18next (use next-intl only)
 
 ### 🔍 Enforcement
 
@@ -237,19 +238,20 @@ Before writing ANY code:
 
 ## 🎯 Quick Reference
 
-| Need          | Use                            | Location                                                |
-| ------------- | ------------------------------ | ------------------------------------------------------- |
-| Button        | `shadcn/ui`                    | `npx shadcn@latest add button`                          |
-| Data fetch    | TanStack Query + Server Action | `lib/react-query/actions/` + `lib/react-query/queries/` |
-| Icons         | Lucide React                   | `import { Icon } from "lucide-react"`                   |
-| Styling       | Tailwind CSS + `cn()`          | `className={cn("...")}`                                 |
-| Page sections | Extract to component           | `components/sections/`                                  |
-| Database      | Neon (PostgreSQL)              | `lib/db/client.ts`                                      |
-| URL params    | nuqs (via useAppQueryParams)   | `hooks/useAppQuery.tsx`                                 |
-| Forms         | react-hook-form + Zod          | `components/forms/` + `types/validation/`               |
-| Auth          | Clerk                          | `@clerk/nextjs`                                         |
-| Theme         | next-themes                    | `providers/theme-provider.tsx`                          |
-| Animations    | framer-motion                  | `components/shared/animate.tsx`                         |
+| Need          | Use                            | Location                                                                                 |
+| ------------- | ------------------------------ | ---------------------------------------------------------------------------------------- |
+| Button        | `shadcn/ui`                    | `npx shadcn@latest add button`                                                           |
+| Data fetch    | TanStack Query + Server Action | `lib/react-query/actions/` + `lib/react-query/queries/`                                  |
+| Icons         | Lucide React                   | `import { Icon } from "lucide-react"`                                                    |
+| Styling       | Tailwind CSS + `cn()`          | `className={cn("...")}`                                                                  |
+| Page sections | Extract to component           | `components/sections/`                                                                   |
+| Database      | Neon (PostgreSQL)              | `lib/db/client.ts`                                                                       |
+| URL params    | nuqs (specific hooks)          | `hooks/usePaginationQueries.tsx`, `hooks/useSearchQuery.tsx`, `hooks/useBotsQueries.tsx` |
+| Forms         | react-hook-form + Zod          | `components/forms/` + `types/validation/`                                                |
+| Auth          | Clerk                          | `@clerk/nextjs`                                                                          |
+| Theme         | next-themes                    | `providers/theme-provider.tsx`                                                           |
+| Animations    | motion                         | `components/shared/animate.tsx`                                                          |
+| i18n          | next-intl                      | `messages/` + `useTranslations()`                                                        |
 
 ---
 
@@ -266,11 +268,11 @@ Before writing ANY code:
 - **[Actions & Queries Architecture](docs/actions-queries.md)** - Table-specific actions, React Query hooks, and query keys
 - **[Forms & Validation](docs/forms-validation.md)** - Form handling with react-hook-form and Zod validation
 - **[Pagination](docs/pagination.md)** - DataBox component, manual pagination, and card-based displays
-- **[URL Parameters](docs/url-parameters.md)** - nuqs integration via useAppQueryParams hook
+- **[URL Parameters](docs/url-parameters.md)** - nuqs integration with specific hooks (usePaginationQuery, useSearchQuery, useBotsQueries)
 - **[Authentication](docs/authentication.md)** - Clerk integration, route protection, and modal authentication
 - **[Theme (Dark/Light Mode)](docs/theme-dark-light-mode.md)** - next-themes setup, theming, and CSS variables
-- **[Internationalization](docs/internationalization.md)** - i18next setup for multi-language support
-- **[Motion & Animations](docs/motion.md)** - framer-motion patterns and reusable animation components
+- **[Internationalization](docs/internationalization.md)** - next-intl setup for multi-language support
+- **[Motion & Animations](docs/motion.md)** - motion patterns and reusable animation components
 
 ### Project Standards
 

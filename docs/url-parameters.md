@@ -1,24 +1,23 @@
-# URL Parameter Handling - nuqs
+# URL Parameter Handling - nuqs with Specific Hooks
 
-**Last Updated**: January 6, 2026  
-**Version**: 1.0.0
+**Last Updated**: January 24, 2026  
+**Version**: 2.0.0
 
-**🚨 CRITICAL:** ALWAYS use `nuqs` via the `useAppQueryParams` hook for managing URL parameters.  
+**🚨 CRITICAL:** ALWAYS use **individual hooks** (`usePaginationQuery`, `useSearchQuery`, `useBotsQueries`) for managing URL parameters.  
 **NEVER use raw `searchParams`, `useSearchParams`, or manual URL manipulation.**
 
 ## 📋 Overview
 
-This project uses **[nuqs](https://nuqs.47ng.com/)** for type-safe URL state management, accessed through a **custom hook** (`useAppQueryParams`) that centralizes pagination, search, and filter parameters.
+This project uses **[nuqs](https://nuqs.47ng.com/)** for type-safe URL state management through **specific, focused hooks** that each manage a distinct set of URL parameters.
 
 ## 🎯 Core Principles
 
-1. **useAppQueryParams hook for ALL URL state** - Page, limit, search (centralized)
-2. **nuqs under the hood** - Type-safe URL parameter management
-3. **Type-safe parameters** - Automatic parsing with `parseAsInteger` and `parseAsString`
-4. **Automatic URL sync** - State changes automatically update the URL
-5. **Cookie integration** - Limit preference persisted in cookies
-6. **Server & Client compatibility** - Works in both environments
-7. **Integration with React Query** - URL params drive query keys for data fetching
+1. **Specific hooks for specific purposes** - Separate hooks for pagination, search, and filters
+2. **Type-safe parameters** - Automatic parsing with `parseAsInteger`, `parseAsString`, `parseAsStringEnum`
+3. **Automatic URL sync** - State changes automatically update the URL
+4. **Composable** - Use multiple hooks together for complex state
+5. **Server & Client compatibility** - Works in both environments
+6. **Integration with React Query** - URL params drive query keys for data fetching
 
 ## 📦 Installation
 
@@ -32,150 +31,211 @@ bun add nuqs
 ```
 Page Component
   ↓
-useAppQueryParams (custom hook)
+Individual Hooks (usePaginationQuery, useSearchQuery, useBotsQueries)
   ↓
 nuqs (useQueryStates)
   ↓
-URL Parameters (page, limit, search)
+URL Parameters (page, limit, search, status)
   ↓
-React Query (useGetLinks)
+React Query (useBots)
   ↓
-Server Action (getLinks)
+Server Action (getBots)
 ```
 
-## 🎯 The useAppQueryParams Hook
+## 🎯 The Individual Hooks
 
-**🚨 ALWAYS use this hook for URL parameters. DO NOT use nuqs directly.**
+**🚨 ALWAYS use these specific hooks. DO NOT use nuqs directly or create generic hooks.**
 
-### Location
+### Hook 1: `usePaginationQuery`
 
-```
-hooks/useAppQuery.tsx
-```
+**Purpose:** Manage page and limit URL parameters
 
-### Implementation
+**Location:** `hooks/usePaginationQueries.tsx`
 
 ```typescript
 "use client";
 
-import { ENUMs } from "@/lib/enums";
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import {
-  getLimitFromCookie,
-  setLimitCookie,
-} from "@/lib/config/pagination.config";
-import { useEffect, useState } from "react";
+import { useQueryStates, parseAsInteger } from "nuqs";
 
-export function useAppQueryParams() {
-  const [cookieLimit, setCookieLimit] = useState<number>(100);
-
-  useEffect(() => {
-    setCookieLimit(getLimitFromCookie());
-  }, []);
-
-  const [queries, setQueries] = useQueryStates({
-    [ENUMs.PARAMS.PAGE]: parseAsInteger.withDefault(0),
-    [ENUMs.PARAMS.LIMIT]: parseAsInteger.withDefault(cookieLimit),
-    [ENUMs.PARAMS.SEARCH]: parseAsString.withDefault(""),
+export function usePaginationQuery() {
+  return useQueryStates({
+    page: parseAsInteger.withDefault(0).withOptions({
+      shallow: false,
+    }),
+    limit: parseAsInteger.withDefault(0).withOptions({
+      shallow: false,
+    }),
   });
-
-  const removeAllQueries = () => {
-    setQueries(null);
-  };
-
-  const setLimit = (limit: number) => {
-    setLimitCookie(limit);
-    setQueries({ limit, page: 0 });
-  };
-
-  return {
-    queries,
-    setQueries,
-    removeAllQueries,
-    setLimit,
-  };
 }
+
+export type PaginationQueryParams = ReturnType<typeof usePaginationQuery>[0];
 ```
 
-### Return Values
+**Return Value:**
 
-- **`queries`** - Object with `page`, `limit`, `search`
-- **`setQueries(updates)`** - Update one or more parameters
-- **`removeAllQueries()`** - Clear all URL parameters
-- **`setLimit(limit)`** - Update limit (saves to cookie, resets to page 0)
+- `[{page, limit}, setQueries]` - Tuple with state and setter
 
-### Default Values
+**Default Values:**
 
-- **page**: `0` (0-based indexing)
-- **limit**: `100` (or from cookie if set)
-- **search**: `""` (empty string)
+- `page`: `0` (0-based indexing)
+- `limit`: `0` (or configured default)
+
+### Hook 2: `useSearchQuery`
+
+**Purpose:** Manage search URL parameter
+
+**Location:** `hooks/useSearchQuery.tsx`
+
+```typescript
+"use client";
+
+import { useQueryStates, parseAsString } from "nuqs";
+
+export function useSearchQuery() {
+  return useQueryStates({
+    search: parseAsString.withDefault("").withOptions({
+      shallow: false,
+    }),
+  });
+}
+
+export type SearchQueryParams = ReturnType<typeof useSearchQuery>[0];
+```
+
+**Return Value:**
+
+- `[{search}, setSearch]` - Tuple with state and setter
+
+**Default Values:**
+
+- `search`: `""` (empty string)
+
+### Hook 3: `useBotsQueries`
+
+**Purpose:** Manage bot-specific filter parameters (status)
+
+**Location:** `hooks/useBotsQueries.tsx`
+
+```typescript
+"use client";
+
+import { useQueryStates, parseAsStringEnum } from "nuqs";
+
+export function useBotsQueries() {
+  return useQueryStates({
+    status: parseAsStringEnum(["all", "active", "down"])
+      .withDefault("all")
+      .withOptions({
+        shallow: false,
+      }),
+  });
+}
+
+export type BotsQueryParams = ReturnType<typeof useBotsQueries>[0];
+```
+
+**Return Value:**
+
+- `[{status}, setStatus]` - Tuple with state and setter
+
+**Default Values:**
+
+- `status`: `"all"` (enum: "all" | "active" | "down")
 
 ## 📝 Usage Patterns
 
-### Pattern 1: Basic Usage in Page Component
+### Pattern 1: Basic Pagination in DataBox Component
 
 ```typescript
-// app/dashboard/page.tsx
+// components/table/data-box.tsx
 "use client";
 
-import { useAppQueryParams } from "@/hooks/useAppQuery";
-import { useGetLinks } from "@/lib/react-query/queries/links.query";
-import { DataBox } from "@/components/table/data-box";
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
 
-export default function DashboardPage() {
-  const { queries, setQueries, setLimit } = useAppQueryParams();
+export function DataBox<T>({ queryFn, Component }: DataBoxProps<T>) {
+  const [{ page, limit }] = usePaginationQuery();
+  const [{ search }] = useSearchQuery();
+  const [{ status }] = useBotsQueries();
 
-  const queryResult = useGetLinks({
-    queries,
-  });
+  const queryResult = queryFn();
 
-  const handlePageChange = (page: number) => {
-    setQueries({ page });
-  };
-
-  const handleLimitChange = (limit: number) => {
-    setLimit(limit);
-  };
-
+  // Pagination controls will automatically update URL
   return (
-    <DataBox
-      queryFn={() => queryResult}
-      Component={LinkCard}
-      onPageChange={handlePageChange}
-      onLimitChange={handleLimitChange}
-      currentPage={queries.page}
-      limit={queries.limit}
-    />
+    <div>
+      {/* Display cards */}
+      <PaginationControls
+        currentPage={page}
+        limit={limit}
+        total={queryResult.data?.total || 0}
+      />
+    </div>
   );
 }
 ```
 
 **Key Points:**
 
-- ✅ Get `queries` object with page, limit, search
-- ✅ Pass `queries` to React Query hook
-- ✅ Update page with `setQueries({ page })`
-- ✅ Update limit with `setLimit(limit)` (resets to page 0)
+- ✅ Destructure specific parameters from each hook
+- ✅ Each hook returns a tuple `[state, setState]`
+- ✅ URL automatically syncs with state changes
 
-### Pattern 2: Search Integration
+### Pattern 2: Page Component with Multiple Hooks
 
 ```typescript
-// In a search component
-import { useAppQueryParams } from "@/hooks/useAppQuery";
+// app/[locale]/bots/page.tsx
+"use client";
 
-export function SearchBar() {
-  const { queries, setQueries } = useAppQueryParams();
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
+import { useBotsInfinite } from "@/lib/react-query/queries/bot.query";
+
+export default function BotsPage() {
+  const [{ page, limit }] = usePaginationQuery();
+  const [{ search }] = useSearchQuery();
+  const [{ status }] = useBotsQueries();
+
+  const queryResult = useBotsInfinite({
+    page,
+    limit,
+    search,
+    status,
+  });
+
+  return <DataBox queryFn={() => queryResult} Component={BotCard} />;
+}
+```
+
+**Key Points:**
+
+- ✅ Use all three hooks together for complex filtering
+- ✅ Pass individual params to React Query hooks
+- ✅ Each hook manages its own URL parameters
+
+### Pattern 3: Search Component
+
+```typescript
+// components/shared/Search.tsx
+"use client";
+
+import { useSearchQuery } from "@/hooks/useSearchQuery";
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+
+export function Search() {
+  const [{ search }, setSearch] = useSearchQuery();
+  const [_, setPagination] = usePaginationQuery();
 
   const handleSearch = (value: string) => {
-    setQueries({
-      search: value,
-      page: 0,
-    });
+    setSearch({ search: value });
+    // Reset to page 0 when searching
+    setPagination({ page: 0 });
   };
 
   return (
     <input
-      value={queries.search}
+      value={search}
       onChange={(e) => handleSearch(e.target.value)}
       placeholder="Search..."
     />
@@ -185,71 +245,133 @@ export function SearchBar() {
 
 **Key Points:**
 
-- ✅ Reset to page 0 when search changes
-- ✅ Controlled input with `queries.search`
+- ✅ Reset page to 0 when search changes
+- ✅ Use setter from destructured tuple
+- ✅ Multiple hooks work independently
 
-### Pattern 3: Integration with React Query
+### Pattern 4: Filter Modal Component
 
 ```typescript
-// lib/react-query/queries/links.query.ts
-export function useGetLinks({
-  queries,
-  enabled = true,
-}: UseGetLinksOptions = {}) {
-  const { userId } = useAuth();
+// components/shared/FilterModal.tsx
+"use client";
 
-  return useQuery({
-    queryKey: links.list(queries),
-    queryFn: (): Promise<PaginationResult<Link>> => getLinks(userId!, queries),
-    retry: 0,
-    enabled: !!userId && enabled,
+import { useBotsQueries } from "@/hooks/useBotsQueries";
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+
+export function FilterModal() {
+  const [{ status }, setStatus] = useBotsQueries();
+  const [_, setPagination] = usePaginationQuery();
+
+  const handleStatusChange = (newStatus: "all" | "active" | "down") => {
+    setStatus({ status: newStatus });
+    // Reset to page 0 when filter changes
+    setPagination({ page: 0 });
+  };
+
+  return (
+    <Select value={status} onValueChange={handleStatusChange}>
+      <SelectItem value="all">All</SelectItem>
+      <SelectItem value="active">Active</SelectItem>
+      <SelectItem value="down">Down</SelectItem>
+    </Select>
+  );
+}
+```
+
+**Key Points:**
+
+- ✅ Use bot-specific hook for status filter
+- ✅ Reset page when filter changes
+- ✅ Type-safe enum values
+
+### Pattern 5: Integration with React Query
+
+```typescript
+// lib/react-query/queries/bot.query.ts
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getBots } from "@/lib/react-query/actions/bot.action";
+
+export function useBotsInfinite({
+  page,
+  limit,
+  search,
+  status,
+}: {
+  page: number;
+  limit: number;
+  search?: string;
+  status?: string;
+}) {
+  return useInfiniteQuery({
+    queryKey: ["bots", "infinite", page, limit, search, status],
+    queryFn: ({ pageParam = 0 }) =>
+      getBots({
+        page: pageParam,
+        limit,
+        search,
+        status,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.hasMore ? allPages.length : undefined;
+    },
   });
 }
 ```
 
 **Key Points:**
 
-- ✅ `queries` object becomes part of query key
-- ✅ Query refetches automatically when URL params change
-- ✅ Type-safe with `QueryParam` type
+- ✅ URL params become part of query key
+- ✅ Query refetches automatically when URL changes
+- ✅ Type-safe with destructured parameters
 
-### Pattern 4: Server Action Integration
+### Pattern 6: Server Action Integration
 
 ```typescript
-// lib/react-query/actions/links.action.ts
-export const getLinks = async (
-  userId: string,
-  queries?: QueryParam
-): Promise<PaginationResult<Link>> => {
-  const page = Number(queries?.page) || 0;
-  const limit = Number(queries?.limit) || 100;
-  const search = (queries?.search as string) || "";
+// lib/react-query/actions/bot.action.ts
+"use server";
 
+export const getBots = async ({
+  page = 0,
+  limit = 30,
+  search = "",
+  status = "all",
+}: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}) => {
   const offset = page * limit;
 
-  const whereConditions: any[] = [eq(links.userId, userId)];
+  const whereConditions: any[] = [];
 
+  // Search filter
   if (search) {
     whereConditions.push(
       or(
-        ilike(links.shortCode, `%${search}%`),
-        ilike(links.originalUrl, `%${search}%`)
+        ilike(bots.name, `%${search}%`),
+        ilike(bots.description, `%${search}%`)
       )!
     );
+  }
+
+  // Status filter
+  if (status !== "all") {
+    whereConditions.push(eq(bots.status, status));
   }
 
   const [data, totalResult] = await Promise.all([
     db
       .select()
-      .from(links)
-      .where(/* ... */)
-      .orderBy(desc(links.createdAt))
+      .from(bots)
+      .where(and(...whereConditions))
+      .orderBy(desc(bots.createdAt))
       .limit(limit)
       .offset(offset),
     db
       .select({ count: sql<number>`count(*)::int` })
-      .from(links)
-      .where(/* ... */),
+      .from(bots)
+      .where(and(...whereConditions)),
   ]);
 
   const total = totalResult[0]?.count || 0;
@@ -260,76 +382,9 @@ export const getLinks = async (
 
 **Key Points:**
 
-- ✅ Extract page, limit, search from `queries` object
+- ✅ Extract parameters with defaults
 - ✅ Calculate offset from page and limit
-- ✅ Use search in WHERE conditions
-
-## 🔑 Query Parameter Definitions
-
-### ENUMs Configuration
-
-```typescript
-// lib/enums.ts
-export const ENUMs = {
-  PARAMS: {
-    PAGE: "page",
-    LIMIT: "limit",
-    SEARCH: "search",
-  },
-};
-```
-
-### QueryParam Type
-
-```typescript
-// types/global.ts
-export type QueryParam = {
-  page?: number;
-  limit?: number;
-  search?: string;
-};
-```
-
-## 🍪 Cookie Integration
-
-The `limit` parameter is persisted in a cookie for user preference.
-
-### Configuration
-
-```typescript
-// lib/config/pagination.config.ts
-import { getCookie, setCookie } from "./cookie.config";
-
-const LIMIT_COOKIE_NAME = "pagination_limit";
-const VALID_LIMITS = [50, 100, 150, 200] as const;
-const DEFAULT_LIMIT = 100;
-
-export const getLimitFromCookie = (): number => {
-  const cookieValue = getCookie(LIMIT_COOKIE_NAME);
-  if (!cookieValue) return DEFAULT_LIMIT;
-
-  const parsedLimit = parseInt(cookieValue, 10);
-
-  if (VALID_LIMITS.includes(parsedLimit as any)) {
-    return parsedLimit;
-  }
-
-  return DEFAULT_LIMIT;
-};
-
-export const setLimitCookie = (limit: number): void => {
-  if (VALID_LIMITS.includes(limit as any)) {
-    setCookie(LIMIT_COOKIE_NAME, limit.toString(), 30);
-  }
-};
-```
-
-**How it works:**
-
-1. ✅ On mount, `useAppQueryParams` reads limit from cookie
-2. ✅ Sets URL param to cookie value if not in URL
-3. ✅ When user changes limit, both cookie and URL update
-4. ✅ Limit resets to page 0 automatically
+- ✅ Apply filters conditionally
 
 ## 📊 URL State Flow
 
@@ -337,16 +392,19 @@ export const setLimitCookie = (limit: number): void => {
 
 ```
 Initial load:
-?page=0&limit=100&search=
+?page=0&limit=30&search=&status=all
 
 After search:
-?page=0&limit=100&search=test
+?page=0&limit=30&search=telegram&status=all
 
 After page change:
-?page=2&limit=100&search=test
+?page=2&limit=30&search=telegram&status=all
+
+After filter change:
+?page=0&limit=30&search=telegram&status=active
 
 After limit change:
-?page=0&limit=50&search=test
+?page=0&limit=50&search=telegram&status=active
 ```
 
 ### State Transitions
@@ -354,29 +412,29 @@ After limit change:
 ```
 1. User types in search
    ↓
-   setQueries({ search: "test", page: 0 })
+   setSearch({ search: "telegram" })
+   setPagination({ page: 0 })
    ↓
-   URL updates: ?page=0&limit=100&search=test
+   URL updates: ?page=0&limit=30&search=telegram&status=all
    ↓
    React Query detects query key change
    ↓
    Refetches data with new params
 
-2. User changes page
+2. User changes status filter
    ↓
-   setQueries({ page: 2 })
+   setStatus({ status: "active" })
+   setPagination({ page: 0 })
    ↓
-   URL updates: ?page=2&limit=100&search=test
+   URL updates: ?page=0&limit=30&search=telegram&status=active
    ↓
    React Query refetches
 
-3. User changes limit
+3. User changes page
    ↓
-   setLimit(50)
+   setPagination({ page: 2 })
    ↓
-   Cookie updated + setQueries({ limit: 50, page: 0 })
-   ↓
-   URL updates: ?page=0&limit=50&search=test
+   URL updates: ?page=2&limit=30&search=telegram&status=active
    ↓
    React Query refetches
 ```
@@ -386,118 +444,126 @@ After limit change:
 ❌ **DON'T use nuqs directly:**
 
 ```typescript
-const [search, setSearch] = useQueryState("search");
+const [search, setSearch] = useQueryState("search"); // ❌
 ```
 
 ❌ **DON'T use useState for URL params:**
 
 ```typescript
-const [page, setPage] = useState(0);
+const [page, setPage] = useState(0); // ❌
 ```
 
 ❌ **DON'T use Next.js searchParams directly:**
 
 ```typescript
 export default function Page({ searchParams }: { searchParams: any }) {
-  const page = searchParams.page;
+  const page = searchParams.page; // ❌
 }
 ```
 
 ❌ **DON'T forget to reset page when changing filters:**
 
 ```typescript
-setQueries({ search: "test" });
+setSearch({ search: "test" }); // ❌ (should also reset page)
 ```
 
-❌ **DON'T update limit without using setLimit:**
+❌ **DON'T create a generic useAppQuery hook:**
 
 ```typescript
-setQueries({ limit: 50 });
+function useAppQuery() {
+  // ❌ (use specific hooks instead)
+  return useQueryStates({ page, limit, search, status });
+}
 ```
 
 ## ✅ Best Practices
 
-- ✅ **Always use `useAppQueryParams`** for URL state
-- ✅ **Reset to page 0** when changing search or limit
-- ✅ **Use `setLimit()`** for limit changes (handles cookie)
-- ✅ **Pass queries object** to React Query hooks
-- ✅ **Type-safe** with QueryParam type
+- ✅ **Use individual hooks** (`usePaginationQuery`, `useSearchQuery`, `useBotsQueries`)
+- ✅ **Reset to page 0** when changing search or filters
+- ✅ **Destructure only needed params** from each hook
+- ✅ **Pass params individually** to React Query hooks
+- ✅ **Type-safe** with exported TypeScript types
 - ✅ **0-based page indexing** (page 0 = first page)
-- ✅ **Centralized parameter management** in one hook
-- ✅ **Cookie persistence** for limit preference
+- ✅ **Shallow routing disabled** for proper navigation
+- ✅ **Composable hooks** - use multiple together as needed
 
-## 🔄 Adding New Parameters
+## 🔄 Adding New URL Parameters
 
 If you need to add new URL parameters in the future:
 
-### 1. Update ENUMs
+### Option 1: Create a New Specific Hook
 
 ```typescript
-// lib/enums.ts
-export const ENUMs = {
-  PARAMS: {
-    PAGE: "page",
-    LIMIT: "limit",
-    SEARCH: "search",
-  },
-};
+// hooks/useCategoryQuery.tsx
+"use client";
+
+import { useQueryStates, parseAsString } from "nuqs";
+
+export function useCategoryQuery() {
+  return useQueryStates({
+    category: parseAsString.withDefault("all").withOptions({
+      shallow: false,
+    }),
+  });
+}
+
+export type CategoryQueryParams = ReturnType<typeof useCategoryQuery>[0];
 ```
 
-### 2. Update useAppQueryParams
+### Option 2: Extend Existing Hook (if related)
 
 ```typescript
-// hooks/useAppQuery.tsx
-const [queries, setQueries] = useQueryStates({
-  [ENUMs.PARAMS.PAGE]: parseAsInteger.withDefault(0),
-  [ENUMs.PARAMS.LIMIT]: parseAsInteger.withDefault(cookieLimit),
-  [ENUMs.PARAMS.SEARCH]: parseAsString.withDefault(""),
-});
-```
+// hooks/useBotsQueries.tsx
+"use client";
 
-### 3. Update QueryParam Type
+import { useQueryStates, parseAsStringEnum, parseAsString } from "nuqs";
 
-```typescript
-// types/global.ts
-export type QueryParam = {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: string;
-};
-```
+export function useBotsQueries() {
+  return useQueryStates({
+    status: parseAsStringEnum(["all", "active", "down"])
+      .withDefault("all")
+      .withOptions({
+        shallow: false,
+      }),
+    category: parseAsString.withDefault("all").withOptions({
+      shallow: false,
+    }),
+  });
+}
 
-### 4. Update Server Action
-
-```typescript
-// lib/react-query/actions/links.action.ts
-export const getLinks = async (
-  userId: string,
-  queries?: QueryParam
-): Promise<PaginationResult<Link>> => {
-  const status = queries?.status || "all";
-
-  if (status !== "all") {
-    whereConditions.push(eq(links.status, status));
-  }
-};
+export type BotsQueryParams = ReturnType<typeof useBotsQueries>[0];
 ```
 
 ## 🎯 Summary
 
 **This project uses:**
 
-- ✅ `useAppQueryParams` hook (custom wrapper around nuqs)
-- ✅ Centralized URL parameter management
-- ✅ Type-safe with TypeScript
-- ✅ Automatic URL synchronization
-- ✅ Cookie persistence for limit
-- ✅ Integration with React Query
-- ✅ Page reset on filter/search/limit changes
-- ✅ 0-based page indexing
+- ✅ **Three specific hooks**:
+  - `usePaginationQuery` - page, limit
+  - `useSearchQuery` - search
+  - `useBotsQueries` - status (bot-specific filters)
+- ✅ **Focused responsibility** - Each hook manages specific parameters
+- ✅ **Type-safe** with TypeScript
+- ✅ **Automatic URL synchronization**
+- ✅ **Integration with React Query**
+- ✅ **Composable** - Use multiple hooks together
+- ✅ **0-based page indexing**
 
 **DO NOT use:**
 
-- ❌ Direct nuqs hooks
+- ❌ Direct nuqs hooks (`useQueryState`, etc.)
 - ❌ useState for URL parameters
 - ❌ Next.js searchParams directly
+- ❌ Generic `useAppQuery` or `useAppQueryParams` hook
 - ❌ Manual URL manipulation
+
+## 📚 Related Documentation
+
+- [Pagination Standards](./pagination.md) - DataBox component and pagination controls
+- [Data Fetching](./data-fetching.md) - TanStack Query integration
+- [AGENTS.md](../AGENTS.md) - Project-wide coding standards
+
+---
+
+**Last Updated**: January 24, 2026  
+**Maintainer**: Ahmad-Softwaree

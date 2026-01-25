@@ -1,15 +1,6 @@
-import { HeroSection } from "@/components/sections/hero-section";
-import { FeaturesSection } from "@/components/sections/features-section";
-import { BotsShowcaseSection } from "@/components/sections/bots-showcase-section";
-import { CtaSection } from "@/components/sections/cta-section";
+import { ENUMs } from "@/lib/enums";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
-  return (
-    <>
-      <HeroSection />
-      <FeaturesSection />
-      <BotsShowcaseSection />
-      <CtaSection />
-    </>
-  );
+export default function RootPage() {
+  redirect(`/${ENUMs.GLOBAL.DEFAULT_LANG}`);
 }

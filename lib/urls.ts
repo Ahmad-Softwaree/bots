@@ -1,6 +1,4 @@
 export const URLS = {
-  HOME: "/",
   BOTS: "/bots",
-  BOT_DETAIL: (id: string) => `/bots/${id}`,
-  ADMIN_DASHBOARD: "/admin/dashboard",
+  HOME_BOTS: "/bots/home",
 } as const;

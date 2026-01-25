@@ -1,50 +1,9 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { Header } from "@/components/layouts/header";
-import { Footer } from "@/components/layouts/footer";
-import { Providers } from "./providers";
-import { PageTransition } from "@/components/shared/page-transition";
-import { Toaster } from "sonner";
-import { ModalManager } from "@/components/shared/ModalManager";
-import { ScrollToTop } from "@/components/shared/ScrollToTop";
+import { ReactNode } from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Telegram Bots - Daily Life Automation",
-  description:
-    "Discover powerful Telegram bots designed to automate your daily tasks and enhance productivity.",
+type Props = {
+  children: ReactNode;
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en" className="dark" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
-        <Providers>
-          <ScrollToTop />
-          <Header />
-          <main className="flex-1 min-h-screen">
-            <PageTransition>{children}</PageTransition>
-          </main>
-          <Footer />
-          <ModalManager />
-          <Toaster position="top-center" richColors />
-        </Providers>
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: Props) {
+  return children;
 }

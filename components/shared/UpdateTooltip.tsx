@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { DataTypes } from "@/types/global";
 import { Button } from "../ui/button";
 import { useModalStore } from "@/lib/store/modal.store";
-import { useTranslation } from "react-i18next";
+import { useLocale, useTranslations } from "next-intl";
 
 const UpdateTooltip = <T extends DataTypes | any>({
   onClick,
@@ -14,8 +14,8 @@ const UpdateTooltip = <T extends DataTypes | any>({
   oldData?: T;
   id?: number;
 }) => {
+  const t = useTranslations();
   const { openModal } = useModalStore();
-  const { i18n } = useTranslation();
   return (
     <Tooltip>
       <TooltipTrigger
@@ -31,7 +31,7 @@ const UpdateTooltip = <T extends DataTypes | any>({
           <Pen />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>{i18n.t("tooltip.update")}</TooltipContent>
+      <TooltipContent>{t("tooltip.update")}</TooltipContent>
     </Tooltip>
   );
 };

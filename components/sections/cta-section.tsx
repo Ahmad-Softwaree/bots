@@ -8,10 +8,11 @@ import {
   ContentFadeIn,
   BlobMotion,
 } from "@/components/shared/animate";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export function CtaSection() {
-  const { t } = useTranslation();
+  const t = useTranslations("cta");
 
   return (
     <section className="  py-20 md:py-24">
@@ -19,32 +20,32 @@ export function CtaSection() {
         <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-primary/10 via-accent/5 to-background p-8 md:p-16">
           <ContentFadeIn className="relative z-10 mx-auto max-w-3xl text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-              {t("cta.title")}
+              {t("title")}
             </h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              {t("cta.subtitle")}
+              {t("subtitle")}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <MotionInteractive>
                 <Button asChild size="lg" className="gap-2">
-                  <a
+                  <Link
                     href="https://wa.me/9647701993085"
                     target="_blank"
                     rel="noopener noreferrer">
-                    {t("cta.get_started")}
+                    {t("get_started")}
                     <ArrowRight className="h-5 w-5" />
-                  </a>
+                  </Link>
                 </Button>
               </MotionInteractive>
               <MotionInteractive>
                 <Button asChild size="lg" variant="outline" className="gap-2">
-                  <a
+                  <Link
                     href="https://github.com/Ahmad-Softwaree"
                     target="_blank"
                     rel="noopener noreferrer">
                     <Github className="h-5 w-5" />
-                    {t("cta.star_github")}
-                  </a>
+                    {t("star_github")}
+                  </Link>
                 </Button>
               </MotionInteractive>
             </div>

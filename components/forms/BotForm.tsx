@@ -2,7 +2,6 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslation } from "react-i18next";
 import { useModalStore } from "@/lib/store/modal.store";
 import { useAddBot, useUpdateBot } from "@/lib/react-query/queries/bot.query";
 import { useDeleteImage } from "@/lib/react-query/queries/uploadthing.query";
@@ -29,17 +28,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { BotSchema, getBotSchema } from "@/validation/bot.validation";
-import { FormProps } from "@/types/global";
+import { GlobalFormProps } from "@/types/global";
+import { useTranslations } from "next-intl";
 
-export function BotForm({ state, onFinalClose }: FormProps) {
-  const { t, i18n } = useTranslation();
+export function BotForm({ state, onFinalClose }: GlobalFormProps) {
+  const t = useTranslations("bot");
+  const common_t = useTranslations("common");
   const { modalData, closeModal } = useModalStore();
   const [isUploading, setIsUploading] = useState(false);
 
   const { startUpload } = useUploadThing("botImageUploader");
 
   const form = useForm<BotSchema>({
-    resolver: zodResolver(getBotSchema(i18n)),
+    resolver: zodResolver(getBotSchema()),
     defaultValues:
       state === "update" && modalData
         ? {
@@ -72,12 +73,12 @@ export function BotForm({ state, onFinalClose }: FormProps) {
 
   const addMutation = useAddBot({
     closeTheModal: onFinalClose,
-    successMessage: t("bot.createSuccess"),
+    successMessage: t("createSuccess"),
   });
 
   const updateMutation = useUpdateBot({
     closeTheModal: onFinalClose,
-    successMessage: t("bot.updateSuccess"),
+    successMessage: t("updateSuccess"),
   });
 
   const deleteImageMutation = useDeleteImage(modalData?.id || "");
@@ -122,7 +123,7 @@ export function BotForm({ state, onFinalClose }: FormProps) {
         const uploadResults = await startUpload(filesToUpload);
 
         if (!uploadResults) {
-          toast.error(t("bot.imageUploadError") || "Failed to upload images");
+          toast.error(t("imageUploadError") || "Failed to upload images");
           return;
         }
 
@@ -154,7 +155,7 @@ export function BotForm({ state, onFinalClose }: FormProps) {
       }
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error(t("bot.imageUploadError") || "Failed to upload images");
+      toast.error(t("imageUploadError") || "Failed to upload images");
     } finally {
       setIsUploading(false);
     }
@@ -171,9 +172,9 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="enName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.name")} (English)</FormLabel>
+              <FormLabel>{t("name")} (English)</FormLabel>
               <FormControl>
-                <Input placeholder={t("bot.name")} {...field} />
+                <Input placeholder={t("name")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -185,9 +186,9 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="arName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.name")} (العربية)</FormLabel>
+              <FormLabel>{t("name")} (العربية)</FormLabel>
               <FormControl>
-                <Input placeholder={t("bot.name")} {...field} />
+                <Input placeholder={t("name")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -199,9 +200,9 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="ckbName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.name")} (کوردی)</FormLabel>
+              <FormLabel>{t("name")} (کوردی)</FormLabel>
               <FormControl>
-                <Input placeholder={t("bot.name")} {...field} />
+                <Input placeholder={t("name")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -213,10 +214,10 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="enDesc"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.description")} (English)</FormLabel>
+              <FormLabel>{t("description")} (English)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("bot.description")}
+                  placeholder={t("description")}
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -231,10 +232,10 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="arDesc"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.description")} (العربية)</FormLabel>
+              <FormLabel>{t("description")} (العربية)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("bot.description")}
+                  placeholder={t("description")}
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -249,10 +250,10 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="ckbDesc"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.description")} (کوردی)</FormLabel>
+              <FormLabel>{t("description")} (کوردی)</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("bot.description")}
+                  placeholder={t("description")}
                   className="min-h-[100px]"
                   {...field}
                 />
@@ -267,7 +268,7 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.image")}</FormLabel>
+              <FormLabel>{t("image")}</FormLabel>
               <FormControl>
                 <ImageUpload
                   value={field.value}
@@ -285,7 +286,7 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="iconImage"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.icon")}</FormLabel>
+              <FormLabel>{t("icon")}</FormLabel>
               <FormControl>
                 <ImageUpload
                   value={field.value}
@@ -303,9 +304,14 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="link"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.link")}</FormLabel>
+              <FormLabel>{t("link")}</FormLabel>
               <FormControl>
-                <Input placeholder="https://t.me/botname" {...field} />
+                <Input
+                  dir="ltr"
+                  className="english_font"
+                  placeholder="https://t.me/botname"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -317,9 +323,14 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="repoLink"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.repo")}</FormLabel>
+              <FormLabel>{t("repo")}</FormLabel>
               <FormControl>
-                <Input placeholder="https://github.com/user/repo" {...field} />
+                <Input
+                  dir="ltr"
+                  className="english_font"
+                  placeholder="https://github.com/user/repo"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -331,16 +342,16 @@ export function BotForm({ state, onFinalClose }: FormProps) {
           name="status"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("bot.status")}</FormLabel>
+              <FormLabel>{t("status")}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder={t("bot.status")} />
+                    <SelectValue placeholder={t("status")} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="active">{t("bot.active")}</SelectItem>
-                  <SelectItem value="down">{t("bot.down")}</SelectItem>
+                  <SelectItem value="active">{t("active")}</SelectItem>
+                  <SelectItem value="down">{t("down")}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -354,14 +365,14 @@ export function BotForm({ state, onFinalClose }: FormProps) {
             variant="outline"
             onClick={closeModal}
             disabled={isLoading}>
-            {t("common.cancel")}
+            {common_t("cancel")}
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading
-              ? t("common.loading")
+              ? common_t("loading")
               : state === "insert"
-              ? t("common.add")
-              : t("common.save")}
+              ? common_t("add")
+              : common_t("save")}
           </Button>
         </div>
       </form>

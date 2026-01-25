@@ -7,7 +7,6 @@ import { flushSync } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { Button } from "./button";
-import { setCookie } from "@/lib/config/cookie.config";
 
 interface AnimatedThemeTogglerProps
   extends React.ComponentPropsWithoutRef<"button"> {
@@ -21,32 +20,13 @@ export const AnimatedThemeToggler = ({
 }: AnimatedThemeTogglerProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    const updateTheme = () => {
-      const isDark = document.documentElement.classList.contains("dark");
-      setTheme(isDark ? "dark" : "light");
-      setCookie("theme", isDark ? "dark" : "light");
-    };
-
-    updateTheme();
-
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
+  const [mounted, setMounted] = useState(false);
   const toggleTheme = useCallback(async () => {
     if (!buttonRef.current) return;
 
     await document.startViewTransition(() => {
       flushSync(() => {
         setTheme(theme == "light" ? "dark" : "light");
-        setCookie("theme", theme == "light" ? "dark" : "light");
       });
     }).ready;
 
@@ -73,6 +53,13 @@ export const AnimatedThemeToggler = ({
       }
     );
   }, [theme, duration]);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <Button

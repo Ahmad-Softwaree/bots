@@ -44,7 +44,9 @@ components/
     LinkCard.Simple.tsx         # Card component for displaying items
 
 hooks/
-  useAppQuery.tsx               # Custom hook for URL params (nuqs)
+  usePaginationQueries.tsx     # Pagination URL params (page, limit)
+  useSearchQuery.tsx            # Search URL params
+  useBotsQueries.tsx            # Bot-specific filter params (status)
 
 lib/
   config/
@@ -179,7 +181,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 type PaginationControlsProps = {
   currentPage: number;
@@ -200,7 +202,7 @@ export function PaginationControls({
   onPageChange,
   onLimitChange,
 }: PaginationControlsProps) {
-  const { t } = useTranslation();
+  const t = useTranslations("pagination");
 
   const startItem = currentPage * limit + 1;
   const endItem = Math.min((currentPage + 1) * limit, total);
@@ -246,8 +248,7 @@ export function PaginationControls({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span className="hidden sm:inline">
-          {t("pagination.showing")} {startItem}-{endItem} {t("pagination.of")}{" "}
-          {total} {t("pagination.links")}
+          {t("showing")} {startItem}-{endItem} {t("of")} {total} {t("links")}
         </span>
         <span className="sm:hidden">
           {startItem}-{endItem} / {total}
@@ -326,50 +327,67 @@ export function PaginationControls({
 - ✅ Internationalized (i18n)
 - ✅ Disabled prev/next when at boundaries
 
-### 3. URL Parameter Hook (`hooks/useAppQuery.tsx`)
+### 3. URL Parameter Hooks (`hooks/`)
 
-**Custom hook using nuqs for URL state:**
+**Individual hooks using nuqs for type-safe URL state:**
+
+#### usePaginationQuery.tsx
 
 ```typescript
 "use client";
 
-import { ENUMs } from "@/lib/enums";
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import {
-  getLimitFromCookie,
-  setLimitCookie,
-} from "@/lib/config/pagination.config";
-import { useEffect, useState } from "react";
+import { useQueryStates, parseAsInteger } from "nuqs";
 
-export function useAppQueryParams() {
-  const [cookieLimit, setCookieLimit] = useState<number>(100);
-
-  useEffect(() => {
-    setCookieLimit(getLimitFromCookie());
-  }, []);
-
-  const [queries, setQueries] = useQueryStates({
-    [ENUMs.PARAMS.PAGE]: parseAsInteger.withDefault(0),
-    [ENUMs.PARAMS.LIMIT]: parseAsInteger.withDefault(cookieLimit),
-    [ENUMs.PARAMS.SEARCH]: parseAsString.withDefault(""),
+export function usePaginationQuery() {
+  return useQueryStates({
+    page: parseAsInteger.withDefault(0).withOptions({
+      shallow: false,
+    }),
+    limit: parseAsInteger.withDefault(0).withOptions({
+      shallow: false,
+    }),
   });
-
-  const removeAllQueries = () => {
-    setQueries(null);
-  };
-
-  const setLimit = (limit: number) => {
-    setLimitCookie(limit);
-    setQueries({ limit, page: 0 });
-  };
-
-  return {
-    queries,
-    setQueries,
-    removeAllQueries,
-    setLimit,
-  };
 }
+
+export type PaginationQueryParams = ReturnType<typeof usePaginationQuery>[0];
+```
+
+#### useSearchQuery.tsx
+
+```typescript
+"use client";
+
+import { useQueryStates, parseAsString } from "nuqs";
+
+export function useSearchQuery() {
+  return useQueryStates({
+    search: parseAsString.withDefault("").withOptions({
+      shallow: false,
+    }),
+  });
+}
+
+export type SearchQueryParams = ReturnType<typeof useSearchQuery>[0];
+```
+
+#### useBotsQueries.tsx
+
+```typescript
+"use client";
+
+importSeparate hooks**: Each hook manages specific URL parameters
+- ✅ **Type-safe**: TypeScript types exported for each hook
+- ✅ **Shallow routing**: Uses `shallow: false` for proper navigation
+- ✅ **Default values**: page=0, limit=0 (or empty), search=""
+- ✅ **Composable**: Use multiple hooks together for complex filteringve", "down"])
+      .withDefault("all")
+      .withOptions({
+        shallow: false,
+      }),
+  });
+}
+
+export type BotsQueryParams = ReturnType<typeof useBotsQueries>[0];
 ```
 
 **Key Features:**
@@ -419,27 +437,20 @@ export const setLimitCookie = (limit: number): void => {
 // app/dashboard/page.tsx
 "use client";
 
-import Page from "@/containers/Page";
 import { DataBox } from "@/components/table/data-box";
-import type { Link } from "@/lib/db/schema";
-import { SimpleLinkCard } from "@/components/cards/LinkCard.Simple";
-import { useGetLinks } from "@/lib/react-query/queries/links.query";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
-import { QueryErrorBoundary } from "@/components/shared/QueryErrorBoundary";
+import type { Bot } from "@/lib/db/schema";
+import { BotCard } from "@/components/cards/BotCard";
+import { useBotsInfinite } from "@/lib/react-query/queries/bot.query";
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
 
-export default function DashboardPage() {
-  const { queries, setQueries, setLimit } = useAppQueryParams();
+export default function BotsPage() {
+  const [{ page, limit }] = usePaginationQuery();
+  const [{ search }] = useSearchQuery();
+  const [{ status }] = useBotsQueries();
 
-  const queryResult = useGetLinks({
-    queries,
-  });
-
-  const handlePageChange = (page: number) => {
-    setQueries({ page });
-  };
-
-  const handleLimitChange = (limit: number) => {
-    setLimit(limit);
+  const queryResult = useBotsInfinite({ page, limit, search, status });
   };
 
   return (
@@ -461,7 +472,7 @@ export default function DashboardPage() {
 
 **Flow:**
 
-1. ✅ `useAppQueryParams` gets page/limit/search from URL
+1. ✅ `usePaginationQuery`, `useSearchQuery`, `useBotsQueries` get params from URL
 2. ✅ `useGetLinks` fetches data with those parameters
 3. ✅ `DataBox` renders cards with pagination controls
 4. ✅ `handlePageChange` updates URL (triggers refetch)

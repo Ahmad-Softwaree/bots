@@ -2,7 +2,7 @@
 
 import { Zap, Shield, Code, Clock } from "lucide-react";
 import { SlideUp, StaggerContainer } from "@/components/shared/animate";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import FeatureCard from "../cards/FeatureCard";
 
 export type Feature = {
@@ -12,28 +12,28 @@ export type Feature = {
 };
 
 export function FeaturesSection() {
-  const { t } = useTranslation();
+  const t = useTranslations("features");
 
   const features = [
     {
       icon: Zap,
-      title: t("features.lightning_fast"),
-      description: t("features.lightning_fast_desc"),
+      title: t("lightning_fast"),
+      description: t("lightning_fast_desc"),
     },
     {
       icon: Shield,
-      title: t("features.reliable_secure"),
-      description: t("features.reliable_secure_desc"),
+      title: t("reliable_secure"),
+      description: t("reliable_secure_desc"),
     },
     {
       icon: Code,
-      title: t("features.open_source"),
-      description: t("features.open_source_desc"),
+      title: t("open_source"),
+      description: t("open_source_desc"),
     },
     {
       icon: Clock,
-      title: t("features.always_available"),
-      description: t("features.always_available_desc"),
+      title: t("always_available"),
+      description: t("always_available_desc"),
     },
   ];
 
@@ -42,10 +42,10 @@ export function FeaturesSection() {
       <SlideUp>
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            {t("features.title")}
+            {t("title")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t("features.subtitle")}
+            {t("subtitle")}
           </p>
         </div>
       </SlideUp>

@@ -34,7 +34,8 @@ A beautiful, modern landing page to showcase your Telegram bots with a powerful 
 - 🎯 **Type-Safe** - Built with TypeScript and Drizzle ORM
 - 🔍 **SEO Optimized** - Great for discoverability
 - ♿ **Accessible** - WCAG compliant
-- 🎭 **Modern UI** - Powered by shadcn/ui
+- 🎭 **Modern UI** - Powered by shadcn/ui- 🌍 **Multi-Language** - English, Arabic, Kurdish support with next-intl
+- ✨ **Smooth Animations** - Beautiful transitions with motion
 
 ### 🔐 Admin Dashboard
 
@@ -69,7 +70,6 @@ A beautiful, modern landing page to showcase your Telegram bots with a powerful 
 
    ```bash
    bun install
-   # or npm install
    ```
 
 3. **Set up environment variables**
@@ -145,21 +145,25 @@ A beautiful, modern landing page to showcase your Telegram bots with a powerful 
 
 ## 🛠️ Tech Stack
 
-| Category                | Technology              |
-| ----------------------- | ----------------------- |
-| **Framework**           | Next.js 15 (App Router) |
-| **Language**            | TypeScript              |
-| **Styling**             | Tailwind CSS 4          |
-| **UI Components**       | shadcn/ui (Radix UI)    |
-| **Icons**               | Lucide React            |
-| **Data Fetching**       | TanStack Query          |
-| **Database**            | Neon (PostgreSQL)       |
-| **ORM**                 | Drizzle ORM             |
-| **Authentication**      | Clerk                   |
-| **File Upload**         | UploadThing             |
-| **Form Validation**     | Zod + React Hook Form   |
-| **Toast Notifications** | Sonner                  |
-| **Deployment**          | Vercel                  |
+| Category                 | Technology              |
+| ------------------------ | ----------------------- |
+| **Framework**            | Next.js 15 (App Router) |
+| **Language**             | TypeScript              |
+| **Styling**              | Tailwind CSS 4          |
+| **UI Components**        | shadcn/ui (Radix UI)    |
+| **Icons**                | Lucide React            |
+| **Animations**           | motion (motion/react)   |
+| **Internationalization** | next-intl               |
+| **URL State Management** | nuqs                    |
+| **Data Fetching**        | TanStack Query          |
+| **Database**             | Neon (PostgreSQL)       |
+| **ORM**                  | Drizzle ORM             |
+| **Authentication**       | Clerk                   |
+| **File Upload**          | UploadThing             |
+| **Form Validation**      | Zod + React Hook Form   |
+| **Toast Notifications**  | Sonner                  |
+| **Package Manager**      | Bun                     |
+| **Deployment**           | Vercel                  |
 
 ## 📁 Project Structure
 
@@ -179,32 +183,40 @@ bots/
 │   └── providers.tsx           # TanStack Query
 ├── components/
 │   ├── cards/
-│   │   └── bot-card.tsx        # Public bot card
-│   ├── dashboard/
-│   │   └── bot-card.tsx        # Admin bot card
+│   │   ├── BotCard.tsx         # Bot card for home/dashboard
+│   │   └── FeatureCard.tsx     # Feature card
 │   ├── forms/
-│   │   └── bot-form.tsx        # Bot create/edit modal
+│   │   └── BotForm.tsx         # Bot create/edit modal
 │   ├── layouts/
 │   │   ├── header.tsx          # Header with admin link
 │   │   └── footer.tsx
 │   ├── sections/               # Page sections
-│   ├── shared/
-│   │   ├── confirmation-dialog.tsx  # Reusable confirmation
-│   │   └── image-upload.tsx         # UploadThing component
+│   ├── shared/                 # Shared components
 │   └── ui/                     # shadcn/ui components
+├── hooks/
+│   ├── usePaginationQueries.tsx # Pagination URL params (page, limit)
+│   ├── useSearchQuery.tsx      # Search URL params
+│   ├── useBotsQueries.tsx      # Bot status filter params
+│   └── use-date.ts             # Date formatting hook
 ├── lib/
-│   ├── actions/
-│   │   └── bot.ts              # Server actions (CRUD + filters)
-│   ├── constants/
-│   │   ├── enum.ts
-│   │   ├── query-keys.ts       # TanStack Query keys
-│   │   └── urls.ts             # Route constants
+│   ├── react-query/
+│   │   ├── keys.ts             # Centralized query keys
+│   │   ├── actions/
+│   │   │   ├── bot.action.ts   # Bot server actions
+│   │   │   └── uploadthing.action.ts
+│   │   └── queries/
+│   │       ├── bot.query.ts    # Bot TanStack Query hooks
+│   │       └── uploadthing.query.ts
 │   ├── db/
 │   │   ├── client.ts           # Database client
 │   │   └── schema.ts           # Drizzle schema
-│   ├── queries/
-│   │   └── bot.ts              # TanStack Query hooks
-│   └── uploadthing.ts          # UploadThing helpers
+│   ├── config/
+│   │   ├── cookie.config.ts    # Cookie utilities
+│   │   └── pagination.config.ts
+│   ├── enums.ts                # Enums and constants
+│   ├── urls.ts                 # Route constants
+│   ├── utils.ts                # Utility functions (cn)
+│   └── uploadthing.ts          # UploadThing config
 ├── types/
 │   └── validation/
 │       └── bot.ts              # Zod schemas
@@ -298,7 +310,9 @@ Contributions are welcome! Please read [AGENTS.md](./AGENTS.md) for coding stand
 - [Data Fetching](./docs/data-fetching.md)
 - [UI Components](./docs/ui-components.md)
 - [Authentication](./docs/authentication.md)
-- [Forms & Validation](./docs/forms-validation.md)
+- [Forms & Validation](./docs/forms-validation.md)- [Internationalization](./docs/internationalization.md)
+- [Motion & Animations](./docs/motion.md)
+- [Pagination](./docs/pagination.md)
 
 ## 📄 License
 
@@ -315,6 +329,8 @@ MIT License - feel free to use for your projects!
 - [UploadThing](https://uploadthing.com/) - File uploads
 - [Lucide](https://lucide.dev/) - Icons
 - [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [motion](https://motion.dev/) - Animations
+- [next-intl](https://next-intl-docs.vercel.app/) - Internationalization
 
 ---
 

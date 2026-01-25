@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { useTranslation } from "react-i18next";
+import { useLocale, useTranslations } from "next-intl";
 import { useModalStore } from "@/lib/store/modal.store";
 import { useToggleBotStatus } from "@/lib/react-query/queries/bot.query";
 import {
@@ -16,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ExternalLink, Github, Calendar, Edit, Trash2 } from "lucide-react";
-import { URLS } from "@/lib/urls";
 import type { Bot } from "@/lib/db/schema";
 import {
   CardFadeUpMotion,
@@ -27,9 +25,10 @@ import {
   IconButtonMotion,
 } from "@/components/shared/animate";
 import dayjs from "dayjs";
+import { Link } from "@/i18n/navigation";
 
 function Home(val: Bot) {
-  const { t } = useTranslation();
+  const t = useTranslations("bot");
   const isActive = val.status === "active";
   const formattedDate = dayjs(val.createdAt).format("MMM D, YYYY");
 
@@ -51,14 +50,14 @@ function Home(val: Bot) {
               <Badge
                 variant={isActive ? "default" : "destructive"}
                 className="shadow-md">
-                {isActive ? t("bot.active") : t("bot.down")}
+                {isActive ? t("active") : t("down")}
               </Badge>
             </BadgeScaleMotion>
           </div>
         </CardHeader>
 
         <CardContent className="p-6 flex-1">
-          <Link href={URLS.BOT_DETAIL(val.id)} className="group/title">
+          <Link href={`/bots/${val.id}`} className="group/title">
             <div className="flex items-start gap-3 mb-3">
               <CardHoverMotion className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
                 <Image
@@ -79,7 +78,7 @@ function Home(val: Bot) {
                 </h3>
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
                   <Calendar className="h-3 w-3" />
-                  <span>{formattedDate}</span>
+                  <span className="english_font">{formattedDate}</span>
                 </div>
               </div>
             </div>
@@ -98,14 +97,14 @@ function Home(val: Bot) {
               className="w-full gap-2"
               disabled={!isActive}>
               {isActive ? (
-                <a href={val.link} target="_blank" rel="noopener noreferrer">
+                <Link href={val.link} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
-                  {t("bot.visit_bot")}
-                </a>
+                  {t("visit_bot")}
+                </Link>
               ) : (
                 <>
                   <ExternalLink className="h-4 w-4" />
-                  {t("bot.down")}
+                  {t("down")}
                 </>
               )}
             </Button>
@@ -116,13 +115,13 @@ function Home(val: Bot) {
               variant="outline"
               size="icon"
               className="flex-shrink-0">
-              <a
+              <Link
                 href={val.repoLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={t("bot.repo")}>
+                aria-label={t("repo")}>
                 <Github className="h-4 w-4" />
-              </a>
+              </Link>
             </Button>
           </IconButtonMotion>
         </CardFooter>
@@ -132,7 +131,9 @@ function Home(val: Bot) {
 }
 
 function Dashboard(val: Bot) {
-  const { t, i18n } = useTranslation();
+  const t = useTranslations("bot");
+  const common_t = useTranslations("common");
+  const locale = useLocale();
   const { openModal } = useModalStore();
   const toggleStatusMutation = useToggleBotStatus({});
 
@@ -164,7 +165,7 @@ function Dashboard(val: Bot) {
         <Badge
           className="absolute top-2 right-2"
           variant={val.status === "active" ? "default" : "destructive"}>
-          {val.status === "active" ? t("bot.active") : t("bot.down")}
+          {val.status === "active" ? t("active") : t("down")}
         </Badge>
       </div>
 
@@ -188,33 +189,29 @@ function Dashboard(val: Bot) {
         </div>
 
         <div className="flex items-center gap-2 pt-2">
-          <a
+          <Link
             href={val.link}
             target="_blank"
             rel="noopener noreferrer"
             className="english_font flex items-center gap-1 text-xs text-primary hover:underline">
             <ExternalLink className="h-3 w-3" />
             Telegram
-          </a>
+          </Link>
           <span className="text-muted-foreground">•</span>
-          <a
+          <Link
             href={val.repoLink}
             target="_blank"
             rel="noopener noreferrer"
             className="english_font flex items-center gap-1 text-xs text-primary hover:underline">
             <Github className="h-3 w-3" />
             Repository
-          </a>
+          </Link>
         </div>
 
         <div className="flex items-center justify-between pt-2 border-t">
           <div className="flex items-center space-x-2">
             <Switch
-              dir={
-                i18n.language === "ar" || i18n.language === "ckb"
-                  ? "rtl"
-                  : "ltr"
-              }
+              dir={locale === "ar" || locale === "ckb" ? "rtl" : "ltr"}
               id={`status-${val.id}`}
               checked={val.status === "active"}
               onCheckedChange={handleToggleStatus}
@@ -223,7 +220,7 @@ function Dashboard(val: Bot) {
             <Label
               htmlFor={`status-${val.id}`}
               className="text-sm cursor-pointer">
-              {val.status === "active" ? t("bot.active") : t("bot.down")}
+              {val.status === "active" ? t("active") : t("down")}
             </Label>
           </div>
         </div>
@@ -236,7 +233,7 @@ function Dashboard(val: Bot) {
           onClick={handleEdit}
           className="flex-1 gap-2">
           <Edit className="h-4 w-4" />
-          {t("common.edit")}
+          {common_t("edit")}
         </Button>
         <Button
           variant="destructive"
@@ -244,7 +241,7 @@ function Dashboard(val: Bot) {
           onClick={handleDelete}
           className="flex-1 gap-2">
           <Trash2 className="h-4 w-4" />
-          {t("common.delete")}
+          {common_t("delete")}
         </Button>
       </CardFooter>
     </Card>

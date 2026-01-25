@@ -1,41 +1,48 @@
-import { ENUMs } from "@/lib/enums";
+"use client";
+
 import { Search as SearchIcon, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 import { Button } from "../ui/button";
-import { useTranslation } from "react-i18next";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
+import { useTranslations } from "next-intl";
+import { debounce } from "nuqs";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
 
 const Search = ({
   className,
   placeholder,
   ...props
 }: React.PropsWithChildren<React.ComponentProps<"input">>) => {
-  const { t } = useTranslation();
+  const t = useTranslations("common");
 
-  const { queries, setQueries } = useAppQueryParams();
-  const search = queries.search || "";
-
-  useEffect(() => {
-    setQueries((prev) => ({
-      ...prev,
-      [ENUMs.PARAMS.PAGE]: 0,
-    }));
-  }, [search, setQueries]);
+  const [{ search }, setQueries] = useSearchQuery();
 
   return (
-    <div className="relative full">
+    <div className="relative w-full">
       <Input
         onChange={(e) =>
-          setQueries((prev) => ({
-            ...prev,
-            [ENUMs.PARAMS.SEARCH]: e.target.value,
-          }))
+          setQueries(
+            (prev) => ({
+              ...prev,
+              search: e.currentTarget.value,
+            }),
+            {
+              limitUrlUpdates:
+                e.target.value === "" ? undefined : debounce(500),
+            }
+          )
         }
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            setQueries((prev) => ({
+              ...prev,
+              search: e.currentTarget.value,
+            }));
+          }
+        }}
         value={search}
-        placeholder={placeholder ?? t("dashboard.search_placeholder")}
-        className={cn(className, `ps-10`)}
+        placeholder={placeholder ?? t("search")}
+        className={cn(className, "pe-10")}
         type="text"
         {...props}
       />
@@ -43,7 +50,7 @@ const Search = ({
       {search === "" && (
         <Button
           variant="link"
-          className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground end-0`}>
+          className="absolute top-1/2 transform -translate-y-1/2 text-muted-foreground end-0">
           <SearchIcon />
         </Button>
       )}
@@ -53,11 +60,11 @@ const Search = ({
           onClick={() =>
             setQueries((prev) => ({
               ...prev,
-              [ENUMs.PARAMS.SEARCH]: "",
+              search: "",
             }))
           }
           variant="ghost"
-          className={`absolute top-1/2 transform -translate-y-1/2 text-muted-foreground end-0`}>
+          className="absolute top-1/2 transform -translate-y-1/2 text-muted-foreground end-0">
           <X />
         </Button>
       )}

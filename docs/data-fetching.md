@@ -29,7 +29,7 @@ Component → Query Hook → Server Action → Drizzle ORM → PostgreSQL (Neon)
   Render    React Query   "use server"   Type-safe queries
 
 Toast notifications happen in Query Hooks (mutation callbacks)
-URL parameters come from nuqs (useAppQueryParams hook)
+URL parameters come from nuqs (specific hooks: usePaginationQuery, useSearchQuery, useBotsQueries)
 ```
 
 ## 📂 Folder Structure
@@ -49,7 +49,9 @@ lib/
     └── pagination.config.ts     # Pagination configuration
 
 hooks/
-└── useAppQuery.tsx              # Custom hook for URL params (nuqs)
+  usePaginationQueries.tsx     # Pagination URL params (page, limit)
+  useSearchQuery.tsx           # Search URL params
+  useBotsQueries.tsx           # Bot filter params (status)
 
 types/
 └── global.ts                    # QueryParam type definition
@@ -307,7 +309,7 @@ export const deleteLink = async (
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import { useModalStore } from "@/lib/store/modal.store";
 import {
   getLinks,
@@ -493,55 +495,63 @@ export function useDeleteLink({ successMessage }: UseDeleteLinkOptions = {}) {
 
 ## 🔗 Step 4: Integration with URL Parameters
 
-Use the `useAppQueryParams` hook for URL state management:
+Use individual nuqs hooks for URL state management:
 
 ```typescript
-// hooks/useAppQuery.tsx
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import {
-  getLimitFromCookie,
-  setLimitCookie,
-} from "@/lib/config/pagination.config";
+// hooks/usePaginationQuery.tsx
+import { useQueryStates, parseAsInteger } from "nuqs";
 
-export function useAppQueryParams() {
-  const [queries, setQueries] = useQueryStates({
-    page: parseAsInteger.withDefault(0),
-    limit: parseAsInteger.withDefault(100),
-    search: parseAsString.withDefault(""),
+export function usePaginationQuery() {
+  return useQueryStates({
+    page: parseAsInteger.withDefault(0).withOptions({ shallow: false }),
+    limit: parseAsInteger.withDefault(0).withOptions({ shallow: false }),
   });
-
-  const setLimit = (limit: number) => {
-    setLimitCookie(limit);
-    setQueries({ limit, page: 0 });
-  };
-
-  return {
-    queries,
-    setQueries,
-    setLimit,
-  };
 }
-```
+
+// hooks/useSearchQuery.tsx
+import { useQueryStates, parseAsString } from "nuqs";
+
+export function useSearchQuery() {
+  return useQueryStates({
+    search: parseAsString.withDefault("").withOptions({ shallow: false }),
+  });
+}
+
+// hooks/useBotsQueries.tsx
+import { useQueryStates, parseAsStringEnum } from "nuqs";
+
+export function useBotsQueries() {
+  return useQueryStates({
+    status: parseAsStringEnum(["all", "active", "down"])
+      .withDefault("all")
+      .withOptions({ shallow: false }),
+  })
 
 ## 🎨 Step 5: Component Usage
-
-```typescript
-// app/dashboard/page.tsx
+[locale]/bots/page.tsx
 "use client";
 
-import { useGetLinks } from "@/lib/react-query/queries/links.query";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
+import { useBotsInfinite } from "@/lib/react-query/queries/bot.query";
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
 import { DataBox } from "@/components/table/data-box";
-import { SimpleLinkCard } from "@/components/cards/LinkCard.Simple";
+import { BotCard } from "@/components/cards/BotCard";
 
-export default function DashboardPage() {
-  const { queries, setQueries, setLimit } = useAppQueryParams();
+export default function BotsPage() {
+  const [{ page, limit }] = usePaginationQuery();
+  const [{ search }] = useSearchQuery();
+  const [{ status }] = useBotsQueries();
 
-  const queryResult = useGetLinks({ queries });
+  const queryResult = useBotsInfinite({ page, limit, search, status });
 
-  const handlePageChange = (page: number) => {
-    setQueries({ page });
-  };
+  return (
+    <DataBox
+      queryFn={() => queryResult}
+      Component={BotCard}
+    />
+  );
+}
 
   const handleLimitChange = (limit: number) => {
     setLimit(limit);

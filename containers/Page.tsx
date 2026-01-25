@@ -3,46 +3,23 @@
 import AddButton from "@/components/shared/AddButton";
 import Search from "@/components/shared/Search";
 import { Button } from "@/components/ui/button";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
-import { useFilterStore } from "@/lib/store/filter.store";
-import { useModalStore } from "@/lib/store/modal.store";
 import { SlidersHorizontal, Home } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import ActionTooltip from "@/components/shared/ActionTooltip";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useModalStore } from "@/lib/store/modal.store";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
 
 interface PageProps {
   children?: React.ReactNode;
   parameters?: string[];
   search?: boolean;
-  statusCards?: boolean;
-  onAddClick?: () => void;
-  extraFilter?: boolean;
 }
 
-const Page = ({
-  children,
-  parameters,
-  search = true,
-  statusCards = false,
-  extraFilter = false,
-  onAddClick,
-}: PageProps) => {
-  const { userId } = useAuth();
-  const router = useRouter();
+const Page = ({ children, parameters, search = true }: PageProps) => {
   const { openModal } = useModalStore();
-  const { t } = useTranslation();
-  const { queries, setQueries } = useAppQueryParams();
-  const { showFilters, toggleFilters } = useFilterStore();
-
-  useEffect(() => {
-    if (!userId) {
-      router.push("/");
-    }
-  }, [userId, router]);
+  const t = useTranslations();
+  const [{ status }, setBotsQueries] = useBotsQueries();
 
   const handleAddLink = () => {
     openModal({
@@ -65,15 +42,28 @@ const Page = ({
             )}
 
             {shouldShowFilterButton && (
-              <ActionTooltip label={t("filter.status")}>
-                <Button
-                  onClick={() => openModal({ type: "filter" })}
-                  variant="outline"
-                  size="icon"
-                  className="hover:bg-primary/10 hover:text-primary hover:border-primary transition-all">
-                  <SlidersHorizontal className="w-4 h-4" />
-                </Button>
-              </ActionTooltip>
+              <>
+                <ActionTooltip label={t("filter.status")}>
+                  <Button
+                    onClick={() => openModal({ type: "filter" })}
+                    variant="outline"
+                    size="icon"
+                    className="hover:bg-primary/10 hover:text-primary hover:border-primary transition-all">
+                    <SlidersHorizontal className="w-4 h-4" />
+                  </Button>
+                </ActionTooltip>
+
+                {status && status !== "all" && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => {
+                      setBotsQueries({ status: null });
+                    }}>
+                    {t("filter.clear")}
+                  </Button>
+                )}
+              </>
             )}
           </div>
 

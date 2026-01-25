@@ -1,4 +1,5 @@
 import React from "react";
+import { Loader2 } from "lucide-react";
 
 const Cards = () => {
   return (
@@ -18,10 +19,24 @@ const Spinner = () => {
   );
 };
 
+const PageLoading = () => {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="text-lg text-muted-foreground animate-pulse">
+          Loading...
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const Loading = () => null;
 
 //Loading.Card
 Loading.Cards = Cards;
 Loading.Spinner = Spinner;
+Loading.PageLoading = PageLoading;
 
 export default Loading;

@@ -2,41 +2,35 @@
 
 import { BotCard } from "@/components/cards/BotCard";
 import { Button } from "@/components/ui/button";
-import { LoadingState } from "@/components/shared/loading-state";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
-import { URLS } from "@/lib/urls";
+import { Link } from "@/i18n/navigation";
 import type { Bot } from "@/lib/db/schema";
 import {
   SlideUp,
   StaggerContainer,
   MotionInteractive,
 } from "@/components/shared/animate";
-import { useTranslation } from "react-i18next";
-import { useGetHomeBots } from "@/lib/react-query/queries/bot.query";
+import { useTranslations } from "next-intl";
 import NoData from "../shared/NoData";
-import Loading from "../shared/Loading";
 
-export function BotsShowcaseSection() {
-  const { t } = useTranslation();
-  const { data: bots, isLoading } = useGetHomeBots();
+export function BotsShowcaseSection({ bots }: { bots: Bot[] }) {
+  const dashboard_t = useTranslations("dashboard");
+  const t = useTranslations("hero");
 
   return (
     <section className="py-20 md:py-24">
       <SlideUp>
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            {t("dashboard.all_bots")}
+            {dashboard_t("all_bots")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            {t("hero.subtitle")}
+            {t("subtitle")}
           </p>
         </div>
       </SlideUp>
 
-      {isLoading ? (
-        <Loading.Cards />
-      ) : bots?.length === 0 ? (
+      {bots?.length === 0 ? (
         <NoData />
       ) : (
         <>
@@ -50,8 +44,8 @@ export function BotsShowcaseSection() {
             <div className="mt-12 text-center">
               <MotionInteractive>
                 <Button asChild size="lg" className="gap-2">
-                  <Link href={URLS.BOTS}>
-                    {t("hero.cta")}
+                  <Link href={"/bots"}>
+                    {t("cta")}
                     <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>

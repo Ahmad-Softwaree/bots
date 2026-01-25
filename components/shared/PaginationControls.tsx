@@ -16,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
-import { useTranslation } from "react-i18next";
+import { usePaginationQuery } from "@/hooks/usePaginationQueries";
+import { useTranslations } from "next-intl";
 
 type PaginationControlsProps = {
   totalPages: number;
@@ -30,16 +30,16 @@ export function PaginationControls({
   totalPages,
   total,
 }: PaginationControlsProps) {
-  const { t } = useTranslation();
-  const { queries, setQueries } = useAppQueryParams();
-  const currentPage = (queries.page as number) - 1 || 0;
-  const limit = Number(queries.limit) || 100;
+  const t = useTranslations("pagination");
+  const [{ page, limit }, setPaginationQueries] = usePaginationQuery();
+  const currentPage = (page as number) - 1 || 0;
+  const currentLimit = Number(limit) || 100;
 
-  const onPageChange = (page: number) => {
-    setQueries({ page: page + 1 });
+  const onPageChange = (newPage: number) => {
+    setPaginationQueries({ page: newPage + 1 });
   };
-  const onLimitChange = (limit: number) => {
-    setQueries({ limit, page: 1 });
+  const onLimitChange = (newLimit: number) => {
+    setPaginationQueries({ limit: newLimit, page: 1 });
   };
 
   const startItem = currentPage * limit + 1;
@@ -86,14 +86,13 @@ export function PaginationControls({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span className="hidden sm:inline">
-          {t("pagination.showing")} {startItem}-{endItem} {t("pagination.of")}{" "}
-          {total} {t("pagination.links")}
+          {t("showing")} {startItem}-{endItem} {t("of")} {total} {t("links")}
         </span>
         <span className="sm:hidden">
           {startItem}-{endItem} / {total}
         </span>
         <Select
-          value={limit.toString()}
+          value={currentLimit.toString()}
           onValueChange={(value) => onLimitChange(Number(value))}>
           <SelectTrigger className="h-8 w-[70px]">
             <SelectValue />
@@ -118,9 +117,7 @@ export function PaginationControls({
                   ? "pointer-events-none opacity-50"
                   : "cursor-pointer"
               }>
-              <span className="hidden sm:block">
-                {t("pagination.previous")}
-              </span>
+              <span className="hidden sm:block">{t("previous")}</span>
             </PaginationPrevious>
           </PaginationItem>
 
@@ -159,7 +156,7 @@ export function PaginationControls({
                   ? "pointer-events-none opacity-50"
                   : "cursor-pointer"
               }>
-              <span className="hidden sm:block">{t("pagination.next")}</span>
+              <span className="hidden sm:block">{t("next")}</span>
             </PaginationNext>
           </PaginationItem>
         </PaginationContent>

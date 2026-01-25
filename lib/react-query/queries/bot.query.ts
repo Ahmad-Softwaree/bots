@@ -1,55 +1,18 @@
 "use client";
 
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { QUERY_KEYS } from "@/lib/react-query/keys";
 import {
   addBot,
-  deleteBot,
-  getBot,
-  getBots,
-  getHomeBots,
-  toggleBotStatus,
   updateBot,
+  deleteBot,
+  toggleBotStatus,
 } from "@/lib/react-query/actions/bot.action";
-import type { QueryParam } from "@/types/types";
-import type { Bot } from "@/lib/db/schema";
+import type { Bot } from "@/types/global";
 import { useModalStore } from "@/lib/store/modal.store";
-
-export const useGetBots = (queryKey: [string, QueryParam]) => {
-  const [name, params] = queryKey;
-
-  return useInfiniteQuery({
-    queryKey: [name, params],
-    queryFn: ({ pageParam }) =>
-      getBots(params, pageParam as number | undefined),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, _, lastPageParam) => {
-      return lastPage.hasMore ? lastPageParam + 1 : undefined;
-    },
-  });
-};
-
-export const useGetHomeBots = () => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.HOME_BOTS],
-    queryFn: () => getHomeBots(),
-  });
-};
-
-export const useGetBot = (id: string | null) => {
-  return useQuery({
-    queryKey: [QUERY_KEYS.BOT, id ?? ""],
-    queryFn: () => getBot(id ?? ""),
-    enabled: !!id,
-  });
-};
+import { handleMutationError } from "@/lib/error-handler";
 
 export const useAddBot = ({
   closeTheModal,
@@ -58,22 +21,23 @@ export const useAddBot = ({
   closeTheModal?: () => void;
   successMessage?: string;
 }) => {
-  const { t } = useTranslation();
+  const t = useTranslations("bot");
   const queryClient = useQueryClient();
   const { closeModal } = useModalStore();
 
   return useMutation({
-    mutationFn: (
-      form: Omit<Bot, "id" | "userId" | "createdAt" | "updatedAt">
-    ) => addBot(form),
+    mutationFn: (form: Omit<Bot, "id" | "createdAt" | "updatedAt">) =>
+      addBot(form),
     onSuccess: (data) => {
-      toast.success(successMessage || t("bot.createSuccess"));
+      toast.success(successMessage || t("createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BOTS] });
       closeModal();
       closeTheModal?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t("bot.createError"));
+      handleMutationError(error, t, "bot.createError", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -85,7 +49,7 @@ export const useUpdateBot = ({
   closeTheModal?: () => void;
   successMessage?: string;
 }) => {
-  const { t } = useTranslation();
+  const t = useTranslations("bot");
   const queryClient = useQueryClient();
   const { closeModal } = useModalStore();
 
@@ -95,16 +59,18 @@ export const useUpdateBot = ({
       form,
     }: {
       id: string;
-      form: Partial<Omit<Bot, "id" | "userId" | "createdAt" | "updatedAt">>;
+      form: Partial<Omit<Bot, "id" | "createdAt" | "updatedAt">>;
     }) => updateBot(id, form),
     onSuccess: (data) => {
-      toast.success(successMessage || t("bot.updateSuccess"));
+      toast.success(successMessage || t("updateSuccess"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BOTS] });
       closeModal();
       closeTheModal?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t("bot.updateError"));
+      handleMutationError(error, t, "bot.updateError", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -116,18 +82,20 @@ export const useDeleteBot = ({
   closeTheModal?: () => void;
   successMessage?: string;
 }) => {
-  const { t } = useTranslation();
+  const t = useTranslations("bot");
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (id: string) => deleteBot(id),
     onSuccess: () => {
-      toast.success(successMessage || t("bot.deleteSuccess"));
+      toast.success(successMessage || t("deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BOTS] });
       closeTheModal?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t("bot.deleteError"));
+      handleMutationError(error, t, "bot.deleteError", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };
@@ -139,7 +107,7 @@ export const useToggleBotStatus = ({
   closeTheModal?: () => void;
   successMessage?: string;
 }) => {
-  const { t } = useTranslation();
+  const t = useTranslations("bot");
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -151,14 +119,14 @@ export const useToggleBotStatus = ({
       currentStatus: "active" | "down";
     }) => toggleBotStatus(id, currentStatus),
     onSuccess: (data) => {
-      toast.success(
-        successMessage || data.message || t("bot.statusToggleSuccess")
-      );
+      toast.success(successMessage || data.message || t("statusToggleSuccess"));
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.BOTS] });
       closeTheModal?.();
     },
     onError: (error: Error) => {
-      toast.error(error.message || t("bot.statusToggleError"));
+      handleMutationError(error, t, "bot.statusToggleError", (msg) =>
+        toast.error(msg)
+      );
     },
   });
 };

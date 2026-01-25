@@ -286,7 +286,7 @@ export const deleteLink = async (
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import { useModalStore } from "@/lib/store/modal.store";
 import {
   getLinks,
@@ -503,14 +503,20 @@ export function useDeleteLink({ successMessage }: UseDeleteLinkOptions = {}) {
 
 ## 📦 Integration with URL Parameters (nuqs)
 
-Query parameters ALWAYS come from the `useAppQueryParams` hook:
+Query parameters ALWAYS come from individual nuqs hooks:
 
 ```typescript
-// In component
-const { queries, setQueries, setLimit } = useAppQueryParams();
+// In page component
+import { usePaginationQuery } from "@/hooks/usePaginationQuery";
+import { useSearchQuery } from "@/hooks/useSearchQuery";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
+
+const [{ page, limit }] = usePaginationQuery();
+const [{ search }] = useSearchQuery();
+const [{ status }] = useBotsQueries();
 
 // Pass to query hook
-const queryResult = useGetLinks({ queries });
+const queryResult = useBotsInfinite({ page, limit, search, status });
 
 // Handle pagination
 const handlePageChange = (page: number) => {
@@ -627,7 +633,7 @@ export const addLink = async (
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import { useModalStore } from "@/lib/store/modal.store";
 import {
   getLinks,

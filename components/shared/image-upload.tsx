@@ -57,7 +57,7 @@ export function ImageUpload({
   const displayUrl = preview || (typeof value === "string" ? value : null);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 english_font">
       {displayUrl ? (
         <div className="relative w-full h-40 rounded-lg border border-border overflow-hidden bg-muted">
           <img

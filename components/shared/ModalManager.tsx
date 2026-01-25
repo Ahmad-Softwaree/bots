@@ -1,7 +1,7 @@
 "use client";
 
 import { useModalStore } from "@/lib/store/modal.store";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 import Modal from "@/components/shared/Modal";
 import { BotForm } from "@/components/forms/BotForm";
 import {
@@ -19,9 +19,11 @@ import { FilterModal } from "@/components/shared/FilterModal";
 
 export function ModalManager() {
   const { modal, closeModal, modalData } = useModalStore();
-  const { t } = useTranslation();
+  const confirm_t = useTranslations("confirm");
+  const form_t = useTranslations("form");
+  const bot_t = useTranslations("bot");
   const deleteMutation = useDeleteBot({
-    successMessage: t("bot.deleteSuccess"),
+    successMessage: bot_t("deleteSuccess"),
   });
 
   const handleDelete = async () => {
@@ -32,8 +34,8 @@ export function ModalManager() {
   if (modal === "add") {
     return (
       <Modal
-        title={t("form.create_title")}
-        description={t("form.create_description")}>
+        title={form_t("create_title")}
+        description={form_t("create_description")}>
         <BotForm state="insert" />
       </Modal>
     );
@@ -42,8 +44,8 @@ export function ModalManager() {
   if (modal === "update") {
     return (
       <Modal
-        title={t("form.update_title")}
-        description={t("form.update_description")}>
+        title={form_t("update_title")}
+        description={form_t("update_description")}>
         <BotForm state="update" />
       </Modal>
     );
@@ -54,18 +56,18 @@ export function ModalManager() {
       <AlertDialog open={true} onOpenChange={closeModal}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("confirm.delete_title")}</AlertDialogTitle>
+            <AlertDialogTitle>{confirm_t("delete_title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("confirm.delete_description")}
+              {confirm_t("delete_description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("confirm.cancel")}</AlertDialogCancel>
+            <AlertDialogCancel>{confirm_t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={deleteMutation.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {deleteMutation.isPending ? "..." : t("confirm.delete")}
+              {deleteMutation.isPending ? "..." : confirm_t("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

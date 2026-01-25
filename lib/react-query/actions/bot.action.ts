@@ -1,230 +1,134 @@
 "use server";
 
-import { db } from "@/lib/db/client";
-import { bots, type Bot } from "@/lib/db/schema";
-import { desc, eq, and, ilike, or, sql } from "drizzle-orm";
-import type { QueryParam } from "@/types/types";
-import { PER_PAGE, ENUMs } from "@/lib/enums";
-import { auth } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
-import { UTApi } from "uploadthing/server";
-
-const utapi = new UTApi();
-
-export type CRUDReturn = { message: string; data?: any };
-
-export type PaginationResult<T> = {
-  data: T[];
-  total: number;
-  hasMore: boolean;
-  totalPages: number;
-};
-
-const getLanguage = async (): Promise<"en" | "ar" | "ckb"> => {
-  const cookieStore = await cookies();
-  const lang = cookieStore.get(ENUMs.GLOBAL.LANG_COOKIE)?.value;
-  return (lang as "en" | "ar" | "ckb") || "en";
-};
-
-const mapBotToLocalized = (bot: Bot, lang: "en" | "ar" | "ckb"): Bot => {
-  return {
-    ...bot,
-    name: lang === "en" ? bot.enName : lang === "ar" ? bot.arName : bot.ckbName,
-    description:
-      lang === "en" ? bot.enDesc : lang === "ar" ? bot.arDesc : bot.ckbDesc,
-  };
-};
+import { get, post, update, del } from "@/lib/config/api.config";
+import { BotsQueryParams } from "@/hooks/useBotsQueries";
+import { SearchQueryParams } from "@/hooks/useSearchQuery";
+import { PaginationQueryParams } from "@/hooks/usePaginationQueries";
+import type { Bot, PaginationResult, CRUDReturn } from "@/types/global";
+import { handleServerError } from "@/lib/error-handler";
+import { URLS } from "@/lib/urls";
+import { ENUMs } from "@/lib/enums";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export const getBots = async (
-  queries?: QueryParam,
-  page: number = 1
+  queries: BotsQueryParams,
+  search: SearchQueryParams,
+  pagination: PaginationQueryParams
 ): Promise<PaginationResult<Bot>> => {
   try {
-    const lang = await getLanguage();
-    const pageNumber = Number(page) - 1 || 0;
-    const limit = Number(queries?.limit) || 100;
-    const search = (queries?.search as string) || "";
-    const status = (queries?.status as string) || "all";
-    const offset = pageNumber * limit;
+    const params = new URLSearchParams({
+      page: String(pagination.page),
+      limit: String(pagination.limit),
+      search: search.search || "",
+      status: queries.status || "all",
+    });
 
-    const whereConditions: any[] = [];
+    const response = await get<PaginationResult<Bot>>(
+      `${URLS.BOTS}?${params.toString()}`,
+      {
+        tags: [ENUMs.TAGS.BOTS],
+        revalidate: 0,
+      }
+    );
 
-    if (status !== "all") {
-      whereConditions.push(eq(bots.status, status as "active" | "down"));
-    }
+    if (response && (response as any).__isError) return response;
 
-    if (search) {
-      whereConditions.push(
-        or(
-          ilike(bots.enName, `%${search}%`),
-          ilike(bots.arName, `%${search}%`),
-          ilike(bots.ckbName, `%${search}%`),
-          ilike(bots.enDesc, `%${search}%`),
-          ilike(bots.arDesc, `%${search}%`),
-          ilike(bots.ckbDesc, `%${search}%`)
-        )!
-      );
-    }
-    const [data, totalResult] = await Promise.all([
-      db
-        .select()
-        .from(bots)
-        .where(
-          whereConditions.length === 0
-            ? undefined
-            : whereConditions.length === 1
-            ? whereConditions[0]
-            : and(...whereConditions)
-        )
-        .orderBy(desc(bots.createdAt))
-        .limit(limit)
-        .offset(offset),
-      db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(bots)
-        .where(
-          whereConditions.length === 0
-            ? undefined
-            : whereConditions.length === 1
-            ? whereConditions[0]
-            : and(...whereConditions)
-        ),
-    ]);
-    const total = totalResult[0]?.count || 0;
-    let totalPages = Math.ceil(total / limit);
-    return {
-      data: data.map((bot) => mapBotToLocalized(bot, lang)),
-      total,
-      totalPages,
-      hasMore: offset + data.length < total,
-    };
+    return response;
   } catch (error) {
-    throw error;
+    throw handleServerError(error) as any;
   }
 };
 
 export const getHomeBots = async (): Promise<Bot[]> => {
-  const lang = await getLanguage();
-  const result = await db
-    .select()
-    .from(bots)
-    .where(eq(bots.status, "active"))
-    .orderBy(desc(bots.createdAt))
-    .limit(PER_PAGE);
+  try {
+    const response = await get<Bot[]>(URLS.HOME_BOTS, {
+      tags: [ENUMs.TAGS.HOME_BOTS],
+      revalidate: 0,
+    });
+    if (response && (response as any).__isError) return response;
 
-  return result.map((bot) => mapBotToLocalized(bot, lang));
+    return response;
+  } catch (error) {
+    throw handleServerError(error) as any;
+  }
 };
 
-export const getBot = async (id: string): Promise<Bot | null> => {
-  const lang = await getLanguage();
-  const result = await db.select().from(bots).where(eq(bots.id, id)).limit(1);
+export const getBot = async (id: string): Promise<Bot> => {
+  try {
+    const response = await get<Bot>(`${URLS.BOTS}/${id}`, {
+      tags: [ENUMs.TAGS.ONE_BOT],
+      revalidate: 0,
+    });
 
-  return result[0] ? mapBotToLocalized(result[0], lang) : null;
+    if (response && (response as any).__isError) return response;
+    return response;
+  } catch (error) {
+    throw handleServerError(error) as any;
+  }
 };
 
 export const addBot = async (
-  form: Omit<Bot, "id" | "userId" | "createdAt" | "updatedAt">
+  form: Omit<Bot, "id" | "createdAt" | "updatedAt">
 ): Promise<CRUDReturn> => {
-  const [newBot] = await db
-    .insert(bots)
-    .values({
-      ...form,
-    })
-    .returning();
+  try {
+    const response = await post<CRUDReturn>(URLS.BOTS, form, {
+      tags: [ENUMs.TAGS.BOTS],
+    });
 
-  return {
-    message: "Bot created successfully",
-    data: newBot,
-  };
+    if (response && (response as any).__isError) return response;
+    revalidatePath(ENUMs.TAGS.BOTS);
+    return response;
+  } catch (error) {
+    return handleServerError(error) as any;
+  }
 };
 
 export const updateBot = async (
   id: string,
-  form: Partial<Omit<Bot, "id" | "userId" | "createdAt" | "updatedAt">>
+  form: Partial<Omit<Bot, "id" | "createdAt" | "updatedAt">>
 ): Promise<CRUDReturn> => {
-  const [updatedBot] = await db
-    .update(bots)
-    .set({
-      ...form,
-      updatedAt: new Date(),
-    })
-    .where(eq(bots.id, id))
-    .returning();
+  try {
+    const response = await update<CRUDReturn>(`${URLS.BOTS}/${id}`, form, {
+      tags: [ENUMs.TAGS.BOTS],
+    });
 
-  if (!updatedBot) {
-    throw new Error("Bot not found");
+    if (response && (response as any).__isError) return response;
+    revalidatePath(ENUMs.TAGS.BOTS);
+
+    return response;
+  } catch (error) {
+    return handleServerError(error) as any;
   }
-
-  return {
-    message: "Bot updated successfully",
-    data: updatedBot,
-  };
 };
 
 export const deleteBot = async (id: string): Promise<CRUDReturn> => {
-  const { userId: authUserId } = await auth();
-
-  if (!authUserId || authUserId !== process.env.ADMIN_USER_ID) {
-    throw new Error("Unauthorized");
-  }
-
-  const [deletedBot] = await db.delete(bots).where(eq(bots.id, id)).returning();
-
-  if (!deletedBot) {
-    throw new Error("Bot not found");
-  }
-
-  // Delete images from UploadThing
   try {
-    const imageUrls = [deletedBot.image, deletedBot.iconImage].filter(Boolean);
+    const response = await del<CRUDReturn>(URLS.BOTS, id, {
+      tags: [ENUMs.TAGS.BOTS],
+    });
 
-    // Extract file keys from URLs
-    const fileKeys = imageUrls
-      .map((url) => {
-        const match = url.match(/\/f\/([^?]+)/);
-        return match ? match[1] : null;
-      })
-      .filter((key): key is string => key !== null);
+    if (response && (response as any).__isError) return response;
+    revalidatePath(ENUMs.TAGS.BOTS);
 
-    if (fileKeys.length > 0) {
-      // Delete files directly using UTApi
-      await utapi.deleteFiles(fileKeys);
-    }
+    return response;
   } catch (error) {
-    console.error("Failed to delete images from UploadThing:", error);
-    // Continue with bot deletion even if image deletion fails
+    return handleServerError(error) as any;
   }
-
-  return {
-    message: "Bot deleted successfully",
-    data: deletedBot,
-  };
 };
 
 export const toggleBotStatus = async (
   id: string,
   currentStatus: "active" | "down"
 ): Promise<CRUDReturn> => {
-  const { userId } = await auth();
+  try {
+    const response = await update<CRUDReturn>(`${URLS.BOTS}/${id}/toggle`, {
+      currentStatus,
+    });
 
-  if (!userId || userId !== process.env.ADMIN_USER_ID) {
-    throw new Error("Unauthorized");
+    if (response && (response as any).__isError) return response;
+
+    return response;
+  } catch (error) {
+    return handleServerError(error) as any;
   }
-
-  const newStatus = currentStatus === "active" ? "down" : "active";
-
-  const [updatedBot] = await db
-    .update(bots)
-    .set({ status: newStatus, updatedAt: new Date() })
-    .where(eq(bots.id, id))
-    .returning();
-
-  if (!updatedBot) {
-    throw new Error("Bot not found");
-  }
-
-  return {
-    message: `Bot status changed to ${newStatus}`,
-    data: updatedBot,
-  };
 };

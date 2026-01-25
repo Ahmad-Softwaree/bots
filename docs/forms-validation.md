@@ -155,7 +155,7 @@ import {
 } from "@/types/validation/links";
 import { createLink, updateLink } from "@/actions/links";
 
-interface LinkFormProps {
+interface LinkGlobalFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: UpdateLink; // If provided, form is in update mode
@@ -167,7 +167,7 @@ export function LinkForm({
   onOpenChange,
   initialData,
   onSuccess,
-}: LinkFormProps) {
+}: LinkGlobalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isUpdateMode = !!initialData;
 

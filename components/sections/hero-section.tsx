@@ -2,17 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Bot, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { URLS } from "@/lib/urls";
 import {
   SlideDown,
   SlideUp,
   MotionInteractive,
 } from "@/components/shared/animate";
-import { useTranslation } from "react-i18next";
+import { useTranslations } from "next-intl";
 
 export function HeroSection() {
-  const { t } = useTranslation();
+  const t = useTranslations("hero");
 
   return (
     <section className="py-20 md:py-28 lg:py-32">
@@ -29,34 +29,34 @@ export function HeroSection() {
         <SlideDown>
           <div className="inline-flex items-center gap-2 rounded-full border border-border/40 bg-muted/50 px-4 py-1.5 text-sm">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span className="font-medium">{t("hero.badge")}</span>
+            <span className="font-medium">{t("badge")}</span>
           </div>
         </SlideDown>
 
         <SlideUp>
           <div className="max-w-4xl space-y-4">
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              {t("hero.title_part1")}{" "}
+              {t("title_part1")}{" "}
               <span
                 className="bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"
                 style={{
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}>
-                {t("hero.title_part2")}
+                {t("title_part2")}
               </span>{" "}
-              {t("hero.title_part3")}{" "}
+              {t("title_part3")}{" "}
               <span
                 className="bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500 bg-clip-text text-transparent"
                 style={{
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}>
-                {t("hero.title_part4")}
+                {t("title_part4")}
               </span>
             </h1>
             <p className="text-lg text-muted-foreground md:text-xl max-w-2xl mx-auto">
-              {t("hero.subtitle")}
+              {t("subtitle")}
             </p>
           </div>
         </SlideUp>
@@ -65,20 +65,20 @@ export function HeroSection() {
           <div className="flex flex-wrap items-center justify-center gap-4">
             <MotionInteractive>
               <Button asChild size="lg" className="gap-2">
-                <Link href={URLS.BOTS}>
+                <Link href={"/bots"}>
                   <Bot className="h-5 w-5" />
-                  {t("hero.cta")}
+                  {t("cta")}
                 </Link>
               </Button>
             </MotionInteractive>
             <MotionInteractive>
               <Button asChild size="lg" variant="outline">
-                <a
+                <Link
                   href="https://github.com/Ahmad-Softwaree"
                   target="_blank"
                   rel="noopener noreferrer">
-                  {t("hero.learn_more")}
-                </a>
+                  {t("learn_more")}
+                </Link>
               </Button>
             </MotionInteractive>
           </div>

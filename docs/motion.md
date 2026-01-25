@@ -1,6 +1,6 @@
-# 🎬 Motion & Animations (framer-motion)
+# 🎬 Motion & Animations (motion)
 
-This document outlines the standards for implementing animations using **framer-motion** in this project.
+This document outlines the standards for implementing animations using **motion** (motion/react) in this project.
 
 ---
 
@@ -10,7 +10,7 @@ This document outlines the standards for implementing animations using **framer-
 
 - **ALL motion/animation components MUST be in** [components/shared/animate.tsx](../components/shared/animate.tsx)
 - **NEVER create motion components** in other files
-- **DO NOT use inline framer-motion** code in pages or components
+- **DO NOT use inline motion** code in pages or components
 
 ### ♻️ Reusability Rule
 
@@ -35,7 +35,7 @@ export function MyComponent() {
 
 ```tsx
 // ❌ WRONG: Inline motion code
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export function MyComponent() {
   return (
@@ -108,10 +108,13 @@ When creating a new reusable animation:
 3. **Use TypeScript** for props
 4. **Include `className` prop** for styling flexibility
 5. **Use `cn()` utility** for class merging
+6. **Import from motion/react** not framer-motion
 
 **Template:**
 
 ```tsx
+import { motion } from "motion/react";
+
 interface MyMotionProps {
   children: ReactNode;
   className?: string;

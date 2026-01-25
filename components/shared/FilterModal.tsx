@@ -1,7 +1,5 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
-import { useAppQueryParams } from "@/hooks/useAppQuery";
 import {
   Dialog,
   DialogContent,
@@ -19,44 +17,51 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useModalStore } from "@/lib/store/modal.store";
+import { useTranslations } from "next-intl";
+import { useBotsQueries } from "@/hooks/useBotsQueries";
+import { usePaginationQuery } from "@/hooks/usePaginationQueries";
 
 export function FilterModal() {
-  const { t } = useTranslation();
+  const t = useTranslations("filter");
+  const dashboard_t = useTranslations("dashboard");
+  const bot_t = useTranslations("bot");
+  const common_t = useTranslations("common");
   const { modal, closeModal } = useModalStore();
-  const { queries, setQueries } = useAppQueryParams();
+  const [{ status }, setBotsQueries] = useBotsQueries();
+  const [, setPaginationQueries] = usePaginationQuery();
 
   const handleStatusChange = (value: string) => {
-    setQueries({ status: value as "all" | "active" | "down", page: 0 });
+    setBotsQueries({ status: value as "all" | "active" | "down" });
+    setPaginationQueries({ page: 0 });
   };
 
   const handleClearFilters = () => {
-    setQueries({ status: "all", page: 0 });
+    setBotsQueries({ status: "all" });
+    setPaginationQueries({ page: 0 });
   };
 
   return (
     <Dialog open={modal === "filter"} onOpenChange={closeModal}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{t("filter.status")}</DialogTitle>
-          <DialogDescription>{t("dashboard.description")}</DialogDescription>
+          <DialogTitle>{t("status")}</DialogTitle>
+          <DialogDescription>{dashboard_t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="status">{t("bot.status")}</Label>
-            <Select
-              value={queries.status || "all"}
-              onValueChange={handleStatusChange}>
+            <Label htmlFor="status">{bot_t("status")}</Label>
+            <Select value={status || "all"} onValueChange={handleStatusChange}>
               <SelectTrigger id="status">
-                <SelectValue placeholder={t("bot.status")} />
+                <SelectValue placeholder={bot_t("status")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t("dashboard.filter_all")}</SelectItem>
+                <SelectItem value="all">{dashboard_t("filter_all")}</SelectItem>
                 <SelectItem value="active">
-                  {t("dashboard.filter_active")}
+                  {dashboard_t("filter_active")}
                 </SelectItem>
                 <SelectItem value="down">
-                  {t("dashboard.filter_down")}
+                  {dashboard_t("filter_down")}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -64,9 +69,9 @@ export function FilterModal() {
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={handleClearFilters}>
-              {t("filter.clear")}
+              {t("clear")}
             </Button>
-            <Button onClick={closeModal}>{t("common.close")}</Button>
+            <Button onClick={closeModal}>{common_t("close")}</Button>
           </div>
         </div>
       </DialogContent>

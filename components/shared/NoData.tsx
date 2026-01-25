@@ -1,4 +1,3 @@
-import { NoDataProps } from "@/types/global";
 import {
   Empty,
   EmptyDescription,
@@ -7,18 +6,18 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Icon } from "iconsax-react";
-import { useTranslation } from "react-i18next";
-export default function NoData({ children, className, ...props }: NoDataProps) {
-  const { t } = useTranslation();
+import { useTranslations } from "next-intl";
+export default function NoData() {
+  const t = useTranslations("dashboard");
   return (
     <Empty>
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <Icon />
         </EmptyMedia>
-        <EmptyTitle className="text-text">{t("dashboard.no_data")}</EmptyTitle>
+        <EmptyTitle className="text-text">{t("no_data")}</EmptyTitle>
         <EmptyDescription className="text-text">
-          {t("dashboard.no_data_found")}
+          {t("no_data_found")}
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

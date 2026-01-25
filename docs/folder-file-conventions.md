@@ -117,15 +117,17 @@ containers/
 ```
 hooks/
 ├── use-date.ts          # Date formatting utilities
-└── useAppQuery.tsx      # Query wrapper hook
+├── usePaginationQueries.tsx  # Pagination URL params
+├── useSearchQuery.tsx      # Search URL params
+└── useBotsQueries.tsx      # Bot filter params
 ```
 
 **Naming Rules**:
 
-| Pattern         | When to Use          | Example                      |
-| --------------- | -------------------- | ---------------------------- |
-| `use-[name].ts` | Simple utility hooks | `use-date.ts`, `use-auth.ts` |
-| `use[Name].tsx` | Hooks with JSX       | `useAppQuery.tsx`            |
+| Pattern         | When to Use          | Example                                          |
+| --------------- | -------------------- | ------------------------------------------------ |
+| `use-[name].ts` | Simple utility hooks | `use-date.ts`, `use-auth.ts`                     |
+| `use[Name].tsx` | Hooks with JSX       | `usePaginationQueries.tsx`, `useSearchQuery.tsx` |
 
 **Key Principles**:
 
@@ -133,16 +135,22 @@ hooks/
 - Lowercase with hyphens for `.ts` files
 - camelCase for `.tsx` files with JSX
 
-### `/i18n` - Internationalization
+### `/i18n` - Internationalization (next-intl)
 
 ```
 i18n/
-├── i18n.ts              # i18next configuration
-├── i18next.d.ts         # TypeScript type definitions
-└── locale/
-    ├── en.json          # English translations
-    ├── ar.json          # Arabic translations
-    └── ckb.json         # Kurdish translations
+├── navigation.ts        # next-intl navigation config
+├── request.ts           # Server-side i18n setup
+└── routing.ts           # Routing configuration
+```
+
+### `/messages` - Translation Files (next-intl)
+
+```
+messages/
+├── en.json              # English translations
+├── ar.json              # Arabic translations
+└── ckb.json             # Kurdish (Sorani) translations
 ```
 
 **Rules**:
@@ -289,7 +297,7 @@ docs/
 | React Component (shared) | `.tsx`    | `PascalCase.tsx`      | `Modal.tsx`                |
 | React Component (ui)     | `.tsx`    | `lowercase-kebab.tsx` | `button.tsx`               |
 | Hook (utility)           | `.ts`     | `use-[name].ts`       | `use-date.ts`              |
-| Hook (with JSX)          | `.tsx`    | `use[Name].tsx`       | `useAppQuery.tsx`          |
+| Hook (with JSX)          | `.tsx`    | `use[Name].tsx`       | `usePaginationQueries.tsx` |
 | Utility function         | `.ts`     | `[purpose].ts`        | `utils.ts`, `functions.ts` |
 | Configuration            | `.ts`     | `[name].config.ts`    | `cookie.config.ts`         |
 | Store                    | `.ts`     | `[name].store.ts`     | `modal.store.ts`           |
@@ -401,20 +409,24 @@ export const use[Name]Store = create<[Name]State & [Name]Actions>((set) => ({
 }));
 ```
 
-### Validation Pattern (Zod)
+### ValiduseTranslations } from "next-intl";
 
-**File**: `[entity].ts`
+export const get[Entity]Schema = () => {
+const t = useTranslations("validation");
 
-```typescript
-import { z } from "zod";
-import { TFunction } from "i18next";
+return z.object({
+// Schema definition with translations
+});
+};
 
+export type [Entity]Schema = z.infer<ReturnType<typeof get[Entity]Schema
 export const get[Entity]Validation = (t: TFunction) =>
-  z.object({
-    // Schema definition with translations
-  });
+z.object({
+// Schema definition with translations
+});
 
 export type [Entity]Input = z.infer<ReturnType<typeof get[Entity]Validation>>;
+
 ```
 
 ## ✅ Best Practices
@@ -465,43 +477,48 @@ When creating a new file, ask:
 ### Adding a New Entity (e.g., "Users")
 
 ```
+
 lib/
 ├── react-query/
-│   ├── actions/
-│   │   └── users.action.ts      # Server actions
-│   └── queries/
-│       └── users.query.ts       # Query hooks
+│ ├── actions/
+│ │ └── users.action.ts # Server actions
+│ └── queries/
+│ └── users.query.ts # Query hooks
 └── db/
-    └── schema.ts                # Add users table
+└── schema.ts # Add users table
 
 types/
-└── global.ts                    # Add User type
+└── global.ts # Add User type
 
 validation/
-└── users.ts                     # Zod schema
+└── users.ts # Zod schema
 
 components/
 ├── forms/
-│   └── UserForm.tsx             # User form component
+│ └── UserForm.tsx # User form component
 └── cards/
-    └── UserCard.tsx             # User card component
+└── UserCard.tsx # User card component
+
 ```
 
 ### Adding a New Feature Section
 
 ```
+
 components/
 └── [feature-name]/
-    ├── [component]-section.tsx
-    └── [helper-component].tsx
+├── [component]-section.tsx
+└── [helper-component].tsx
 
 app/
 └── [feature-name]/
-    ├── page.tsx
-    └── layout.tsx
+├── page.tsx
+└── layout.tsx
+
 ```
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 1.0.0
 **Last Updated**: January 6, 2026
+```
