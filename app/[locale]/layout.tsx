@@ -10,6 +10,8 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import { shadcn } from "@clerk/themes";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,29 +42,41 @@ export default async function LocaleLayout({
   }
   setRequestLocale(locale);
   return (
-    <html
-      dir={locale === "en" ? "ltr" : "rtl"}
-      lang={locale}
-      suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${
-          locale == "en"
-            ? "english_font"
-            : locale == "ar"
-            ? "arabic_font"
-            : "kurdish_font"
-        }  antialiased min-h-screen flex flex-col overflow-x-hidden`}>
-        <NextIntlClientProvider>
-          <Providers>
-            <Header />
-            <main className="flex-1 min-h-screen">
-              <PageTransition>{children}</PageTransition>
-            </main>
-            <Footer />
-            <ScrollToTop />
-          </Providers>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <ClerkProvider
+      afterSignOutUrl={`/${locale}`}
+      signInForceRedirectUrl={`/${locale}/admin/dashboard`}
+      appearance={{
+        baseTheme: shadcn,
+        elements: {
+          footerAction: {
+            display: "none",
+          },
+        },
+      }}>
+      <html
+        dir={locale === "en" ? "ltr" : "rtl"}
+        lang={locale}
+        suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} ${
+            locale == "en"
+              ? "english_font"
+              : locale == "ar"
+              ? "arabic_font"
+              : "kurdish_font"
+          }  antialiased min-h-screen flex flex-col overflow-x-hidden`}>
+          <NextIntlClientProvider>
+            <Providers>
+              <Header />
+              <main className="flex-1 min-h-screen">
+                <PageTransition>{children}</PageTransition>
+              </main>
+              <Footer />
+              <ScrollToTop />
+            </Providers>
+          </NextIntlClientProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

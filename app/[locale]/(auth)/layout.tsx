@@ -12,20 +12,10 @@ const AuthLayout = async ({
 }) => {
   const { locale } = await params;
   return (
-    <ClerkProvider
-      afterSignOutUrl={`/${locale}`}
-      signInForceRedirectUrl={`/${locale}/admin/dashboard`}
-      appearance={{
-        baseTheme: shadcn,
-        elements: {
-          footerAction: {
-            display: "none",
-          },
-        },
-      }}>
+    <>
       <AuthButton />
       {children}
-    </ClerkProvider>
+    </>
   );
 };
 
